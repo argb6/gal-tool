@@ -21,6 +21,12 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .quick-pick .item a { color: #58a6ff; text-decoration: none; }
 .quick-pick .item a:hover { text-decoration: underline; }
 .quick-pick .desc { font-size: 12px; color: #8b949e; margin-left: 8px; }
+.cat-links { display: flex; gap: 12px; margin-bottom: 24px; }
+.cat-link { flex: 1; background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; text-decoration: none; color: #c9d1d9; transition: border-color 0.2s; }
+.cat-link:hover { border-color: #58a6ff; }
+.cat-link .icon { font-size: 20px; margin-bottom: 8px; }
+.cat-link .name { font-size: 14px; font-weight: 600; }
+.cat-link .count { font-size: 11px; color: #8b949e; margin-top: 4px; }
 .results { margin-top: 16px; }
 .result-item { padding: 14px 16px; border: 1px solid #21262d; border-radius: 8px; margin-bottom: 10px; background: #161b22; transition: border-color 0.2s; }
 .result-item:hover { border-color: #58a6ff; }
@@ -43,6 +49,29 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 </div>
 <div class="status" id="status"></div>
 
+<div class="cat-links" id="catLinks">
+  <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
+    <div class="icon">🏠</div>
+    <div class="name">总仓库</div>
+    <div class="count">GitHub</div>
+  </a>
+  <a href="#" class="cat-link" id="simulatorLink">
+    <div class="icon">📱</div>
+    <div class="name">模拟器</div>
+    <div class="count" id="simulatorCount">0</div>
+  </a>
+  <a href="#" class="cat-link" id="websiteLink">
+    <div class="icon">🌐</div>
+    <div class="name">网站</div>
+    <div class="count" id="websiteCount">0</div>
+  </a>
+  <a href="#" class="cat-link" id="toolLink">
+    <div class="icon">🛠️</div>
+    <div class="name">工具</div>
+    <div class="count" id="toolCount">0</div>
+  </a>
+</div>
+
 <div class="stats" id="stats">
   <div class="stat-card">
     <div class="num" id="totalCount">0</div>
@@ -59,7 +88,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 </div>
 
 <div class="quick-pick" id="randomPick">
-  <h3>🎲 随机推荐</h3>
+  <h3>🎲 网站随机推荐</h3>
   <div class="item" id="randomItem">加载中…</div>
 </div>
 
@@ -105,11 +134,27 @@ function updateStats() {
   document.getElementById("totalCount").textContent = allData.length;
   document.getElementById("catCount").textContent = cats.size;
   document.getElementById("updated").textContent = lastUpdate || "-";
+
+  // 分类计数
+  const counts = { simulator: 0, website: 0, tool: 0 };
+  allData.forEach(d => counts[d.cat]++);
+  document.getElementById("simulatorCount").textContent = counts.simulator;
+  document.getElementById("websiteCount").textContent = counts.website;
+  document.getElementById("toolCount").textContent = counts.tool;
+
+  // 分类链接
+  document.getElementById("simulatorLink").href = GITHUB_BASE + "/simulators/README.md";
+  document.getElementById("websiteLink").href = GITHUB_BASE + "/websites/README.md";
+  document.getElementById("toolLink").href = GITHUB_BASE + "/tools/README.md";
 }
 
 function updateRandomPick() {
-  if (!allData.length) return;
-  const r = allData[Math.floor(Math.random() * allData.length)];
+  const websites = allData.filter(d => d.cat === "website");
+  if (!websites.length) {
+    document.getElementById("randomItem").textContent = "暂无网站条目";
+    return;
+  }
+  const r = websites[Math.floor(Math.random() * websites.length)];
   document.getElementById("randomItem").innerHTML = `
     <a href="${r.url}" target="_blank">${r.name}<span class="tag ${CAT_CLASS[r.cat]}">${TAG_MAP[r.cat]}</span></a>
     <span class="desc">${r.desc}</span>
