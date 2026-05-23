@@ -39,7 +39,6 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
 .loading { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
-.status { text-align: center; color: #484f58; font-size: 12px; margin-top: -20px; margin-bottom: 20px; }
 .home-section { display: block; }
 .searching .home-section { display: none; }
 </style>
@@ -47,214 +46,104 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 <body>
 <h1>Galgame 工具与网站导航</h1>
 <div class="search-box">
-  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus disabled>
+  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus>
 </div>
-<div class="status" id="status"></div>
 
 <div class="home-section">
   <div class="cat-links" id="catLinks">
     <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
-      <div class="icon">🏠</div>
-      <div class="name">总仓库</div>
-      <div class="count">GitHub</div>
+      <div class="icon">🏠</div><div class="name">总仓库</div><div class="count">GitHub</div>
     </a>
     <a href="#" class="cat-link" id="simulatorLink">
-      <div class="icon">📱</div>
-      <div class="name">模拟器</div>
-      <div class="count" id="simulatorCount">0</div>
+      <div class="icon">📱</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
     </a>
     <a href="#" class="cat-link" id="websiteLink">
-      <div class="icon">🌐</div>
-      <div class="name">网站</div>
-      <div class="count" id="websiteCount">0</div>
+      <div class="icon">🌐</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
     </a>
     <a href="#" class="cat-link" id="toolLink">
-      <div class="icon">🛠️</div>
-      <div class="name">工具</div>
-      <div class="count" id="toolCount">0</div>
+      <div class="icon">🛠️</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
     </a>
   </div>
-
-  <div class="stats" id="stats">
-    <div class="stat-card">
-      <div class="num" id="totalCount">0</div>
-      <div class="label">总条目数</div>
-    </div>
-    <div class="stat-card">
-      <div class="num" id="catCount">0</div>
-      <div class="label">分类数量</div>
-    </div>
-    <div class="stat-card">
-      <div class="num" id="updated">-</div>
-      <div class="label">最近更新</div>
-    </div>
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">总条目数</div></div>
+    <div class="stat-card"><div class="num" id="catCount">0</div><div class="label">分类数量</div></div>
+    <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
   </div>
-
   <div class="quick-pick" id="randomPick">
     <h3>🎲 网站随机推荐</h3>
     <div class="item" id="randomItem">加载中…</div>
   </div>
-
   <div class="quick-pick" id="recentPick">
     <h3>📅 最近新增</h3>
     <div id="recentList">加载中…</div>
   </div>
 </div>
 
-<div class="results" id="results">
-  <div class="loading">正在加载…</div>
-</div>
+<div class="results" id="results"></div>
 
 <script>
-const API = "https://api.github.com/repos/argb6/gal-tool/contents";
-const GITHUB_BASE = "https://github.com/argb6/gal-tool/blob/main";
-const TAG_MAP = { simulator: "模拟器", website: "网站", tool: "工具" };
-const CAT_CLASS = { simulator: "simulator", website: "website", tool: "tool" };
-const DIRS = [
-  { dir: "simulators", cat: "simulator" },
-  { dir: "websites",    cat: "website" },
-  { dir: "tools",       cat: "tool" },
-];
+const API="https://api.github.com/repos/argb6/gal-tool/contents";
+const GITHUB="https://github.com/argb6/gal-tool/blob/main";
+const TAG={simulator:"模拟器",website:"网站",tool:"工具"};
+const CLS={simulator:"simulator",website:"website",tool:"tool"};
+const DIRS=[{d:"simulators",c:"simulator"},{d:"websites",c:"website"},{d:"tools",c:"tool"}];
+let all=[];
 
-let allData = [];
-let lastUpdate = "";
-
-function parseMarkdown(text, cat, baseDir) {
-  const items = [];
-  const lines = text.split("\n");
-  for (const line of lines) {
-    const m = line.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
-    if (m) {
-      let name = m[1], url = m[2], desc = m[3].replace(/^[-–—]\s*/, "");
-      if (!url.startsWith("http")) url = GITHUB_BASE + "/" + baseDir + url;
-      items.push({ name, desc, cat, url, added: Date.now() });
-    }
-  }
-  return items;
-}
-
-function updateStats() {
-  const cats = new Set(allData.map(d => d.cat));
-  document.getElementById("totalCount").textContent = allData.length;
-  document.getElementById("catCount").textContent = cats.size;
-  document.getElementById("updated").textContent = lastUpdate || "-";
-
-  const counts = { simulator: 0, website: 0, tool: 0 };
-  allData.forEach(d => counts[d.cat]++);
-  document.getElementById("simulatorCount").textContent = counts.simulator;
-  document.getElementById("websiteCount").textContent = counts.website;
-  document.getElementById("toolCount").textContent = counts.tool;
-
-  document.getElementById("simulatorLink").href = GITHUB_BASE + "/simulators/README.md";
-  document.getElementById("websiteLink").href = GITHUB_BASE + "/websites/README.md";
-  document.getElementById("toolLink").href = GITHUB_BASE + "/tools/README.md";
-}
-
-function updateRandomPick() {
-  const websites = allData.filter(d => d.cat === "website");
-  if (!websites.length) {
-    document.getElementById("randomItem").textContent = "暂无网站条目";
-    return;
-  }
-  const r = websites[Math.floor(Math.random() * websites.length)];
-  document.getElementById("randomItem").innerHTML = `
-    <a href="${r.url}" target="_blank">${r.name}<span class="tag ${CAT_CLASS[r.cat]}">${TAG_MAP[r.cat]}</span></a>
-    <span class="desc">${r.desc}</span>
-  `;
-}
-
-function updateRecentPick() {
-  const recent = [...allData].sort((a, b) => b.added - a.added).slice(0, 3);
-  document.getElementById("recentList").innerHTML = recent.map(r => `
-    <div class="item">
-      <a href="${r.url}" target="_blank">${r.name}<span class="tag ${CAT_CLASS[r.cat]}">${TAG_MAP[r.cat]}</span></a>
-      <span class="desc">${r.desc}</span>
-    </div>
-  `).join("");
-}
-
-function search(q) {
-  if (!q) {
-    document.body.classList.remove("searching");
-    document.getElementById("results").innerHTML = '<div class="empty">共收录 ' + allData.length + ' 个条目</div>';
-    return;
-  }
-  document.body.classList.add("searching");
-  const matched = allData.filter(d =>
-    d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)
-  );
-  const el = document.getElementById("results");
-  if (!matched.length) {
-    el.innerHTML = '<div class="empty">没有找到匹配的结果</div>';
-    return;
-  }
-  el.innerHTML = matched.map(i => `
-    <div class="result-item">
-      <a href="${i.url}" target="_blank">${i.name}<span class="tag ${CAT_CLASS[i.cat]}">${TAG_MAP[i.cat]}</span></a>
-      <div class="desc">${i.desc}</div>
-    </div>
-  `).join("");
-}
-
-async function loadIndex() {
-  const searchInput = document.getElementById("search");
-  const statusEl = document.getElementById("status");
-
-  const readmeFetches = DIRS.map(async ({ dir, cat }) => {
-    const resp = await fetch(API + "/" + dir + "/README.md");
-    if (!resp.ok) return;
-    const file = await resp.json();
-    const raw = await fetch(file.download_url);
-    if (!raw.ok) return;
-    const text = await raw.text();
-    const items = parseMarkdown(text, cat, dir + "/");
-    allData = allData.concat(items);
+function parse(t,c,dir){
+  let r=[];
+  t.split("\n").forEach(l=>{
+    let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
+    if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\s*/,"");
+    if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
+    r.push({n,d,c,u});}
   });
-
-  await Promise.all(readmeFetches);
-  searchInput.disabled = false;
-  statusEl.textContent = "已收录 " + allData.length + " 个条目（正在深度扫描更多文件…）";
-  search("");
-  updateStats();
-  updateRandomPick();
-  updateRecentPick();
-
-  for (const { dir, cat } of DIRS) {
-    try {
-      const listResp = await fetch(API + "/" + dir);
-      if (!listResp.ok) continue;
-      const files = await listResp.json();
-      const others = files.filter(f => f.name.endsWith(".md") && f.name !== "README.md");
-
-      others.forEach(async f => {
-        try {
-          const rawResp = await fetch(f.download_url);
-          if (!rawResp.ok) return;
-          const text = await rawResp.text();
-          const items = parseMarkdown(text, cat, dir + "/");
-          allData = allData.concat(items);
-          statusEl.textContent = "已收录 " + allData.length + " 个条目";
-          updateStats();
-          updateRandomPick();
-          updateRecentPick();
-        } catch (e) {}
-      });
-    } catch (e) {}
-  }
-
-  try {
-    const repoResp = await fetch("https://api.github.com/repos/argb6/gal-tool");
-    const repo = await repoResp.json();
-    lastUpdate = new Date(repo.pushed_at).toLocaleDateString("zh-CN");
-    updateStats();
-  } catch (e) {}
+  return r;
 }
 
-document.getElementById("search").addEventListener("input", function(e) {
-  search(e.target.value.trim().toLowerCase());
-});
+function upd(){
+  let c={simulator:0,website:0,tool:0};all.forEach(x=>c[x.c]++);
+  document.getElementById("totalCount").textContent=all.length;
+  document.getElementById("catCount").textContent=new Set(all.map(x=>x.c)).size;
+  document.getElementById("simulatorCount").textContent=c.simulator;
+  document.getElementById("websiteCount").textContent=c.website;
+  document.getElementById("toolCount").textContent=c.tool;
+  document.getElementById("simulatorLink").href=GITHUB+"/simulators/README.md";
+  document.getElementById("websiteLink").href=GITHUB+"/websites/README.md";
+  document.getElementById("toolLink").href=GITHUB+"/tools/README.md";
+  let ws=all.filter(x=>x.c==="website");
+  if(ws.length){
+    let r=ws[Math.floor(Math.random()*ws.length)];
+    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span>';
+  }
+  let rc=[...all].slice(-3).reverse();
+  document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
+}
 
-loadIndex();
+function search(q){
+  if(!q){document.body.classList.remove("searching");document.getElementById("results").innerHTML="";return;}
+  document.body.classList.add("searching");
+  let m=all.filter(x=>x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q));
+  let el=document.getElementById("results");
+  el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span></a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
+}
+
+async function load(){
+  await Promise.all(DIRS.map(async({d,c})=>{
+    let r=await fetch(API+"/"+d+"/README.md");if(!r.ok)return;
+    let f=await r.json();
+    let t=await (await fetch(f.download_url)).text();
+    all=all.concat(parse(t,c,d+"/"));
+  }));
+  upd();
+  try{
+    let r=await fetch("https://api.github.com/repos/argb6/gal-tool");
+    let j=await r.json();
+    document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");
+  }catch(e){}
+}
+
+document.getElementById("search").addEventListener("input",e=>search(e.target.value.trim().toLowerCase()));
+load();
 </script>
 </body>
 </html>
