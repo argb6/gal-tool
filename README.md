@@ -32,17 +32,10 @@
 
 ```
 gal-tool/
-├── tools/                  # 工具导航目录
-│   ├── rating.md          # 评分记录类工具链接
-│   ├── database.md        # 图鉴查询类工具链接
-│   ├── archive.md         # 存档管理类工具链接
-│   └── guide.md           # 攻略辅助类工具链接
-├── websites/              # 网站导航目录
-│   ├── database.md        # 资料数据库链接
-│   ├── community.md       # 社区论坛链接
-│   ├── guide.md           # 攻略站点链接
-│   └── news.md            # 资讯评测站链接
-└── mindmap.md             # 思维导图
+├── simulators/           # 模拟器导航（查看 mindmap.md）
+├── websites/             # 网站导航集合
+├── tools/                # 工具导航集合
+└── mindmap.md            # 思维导图
 ```
 
 ## 快速开始
@@ -51,7 +44,7 @@ gal-tool/
 git clone https://github.com/argb6/gal-tool.git
 ```
 
-进入对应目录即可浏览各类工具和网站链接。
+进入对应目录即可浏览各类模拟器、工具和网站链接。
 
 ## 贡献
 
@@ -59,7 +52,13 @@ git clone https://github.com/argb6/gal-tool.git
 
 ## 许可证
 
-MIT License
+本项目内容采用 [CC BY 4.0](LICENSE) 许可证。
+
+## 版权声明
+
+本仓库仅为导航性质，收录的所有工具、网站链接均指向第三方资源。各资源版权归原作者或平台所有。
+
+若您认为本仓库中的某些链接侵犯了您的权益，请在 Issues 中提出或联系仓库维护者，我们将在核实后第一时间删除相关内容。
 
 ---
 
