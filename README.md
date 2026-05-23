@@ -1,6 +1,6 @@
 # Gal-Tool - Galgame 工具与网站导航
 
-![思维导图](https://github.com/argb6/gal-tool/raw/main/assets/mindmap.png)
+> [查看思维导图](mindmap.md)
 
 ## 项目简介
 
@@ -42,8 +42,7 @@ gal-tool/
 │   ├── community.md       # 社区论坛链接
 │   ├── guide.md           # 攻略站点链接
 │   └── news.md            # 资讯评测站链接
-└── assets/                # 资源文件
-    └── mindmap.png        # 项目思维导图
+└── mindmap.md             # 思维导图
 ```
 
 ## 快速开始
