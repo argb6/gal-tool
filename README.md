@@ -9,6 +9,7 @@
   - [网站](#网站)
   - [工具](#工具)
 - [贡献](#贡献)
+- [贡献者](#贡献者)
 - [许可证](#许可证)
 - [版权说明](#版权声明)
 
@@ -22,6 +23,7 @@
 
 ```
 gal-tool/
+├── simulators/           # 模拟器导航
 ├── websites/             # 网站导航集合
 ├── tools/                # 工具导航集合
 ├── README.md             # 项目首页
@@ -67,6 +69,13 @@ gal-tool/
 ## 贡献
 
 发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 或 Pull Request 补充链接！详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+## 贡献者
+
+感谢以下贡献者对本项目的支持：
+
+- [argb6](https://github.com/argb6)
+- [gaigai11311](https://github.com/gaigai11311)
 
 ## 许可证
 
