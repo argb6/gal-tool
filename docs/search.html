@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galgame 工具与网站导航 - 搜索</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 700px; margin: 0 auto; }
+h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
+.search-box { position: relative; margin-bottom: 32px; }
+.search-box input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; }
+.search-box input:focus { border-color: #58a6ff; }
+.results { margin-top: 16px; }
+.result-item { padding: 14px 16px; border: 1px solid #21262d; border-radius: 8px; margin-bottom: 10px; background: #161b22; transition: border-color 0.2s; }
+.result-item:hover { border-color: #58a6ff; }
+.result-item a { color: #58a6ff; text-decoration: none; font-size: 16px; font-weight: 600; }
+.result-item a:hover { text-decoration: underline; }
+.result-item .desc { color: #8b949e; font-size: 13px; margin-top: 4px; }
+.result-item .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; background: #21262d; color: #8b949e; }
+.tag.simulator { background: #1f3a1f; color: #7ee787; }
+.tag.website { background: #1f2a3a; color: #79c0ff; }
+.tag.tool { background: #3a1f2a; color: #ffa198; }
+.empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
+.hint { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
+</style>
+</head>
+<body>
+<h1>Galgame 工具与网站导航</h1>
+<div class="search-box">
+  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus>
+</div>
+<div class="results" id="results">
+  <div class="hint">输入关键词开始搜索</div>
+</div>
+
+<script>
+const data = [
+  // 模拟器
+  { name: "krkr", desc: "吉里吉里模拟器，支持 .xp3 格式", cat: "simulator", url: "simulators/krkr.md" },
+  { name: "tyranor", desc: "Android 端模拟器，兼容性优于 ONS", cat: "simulator", url: "simulators/tyranor.md" },
+  { name: "mine", desc: "轻量级模拟器，简单易用", cat: "simulator", url: "simulators/mine.md" },
+  { name: "winlator", desc: "在 Android 上运行 Windows 程序", cat: "simulator", url: "simulators/winlator.md" },
+  { name: "盖世游戏", desc: "游戏盒子类模拟器，对新手友好", cat: "simulator", url: "simulators/gaishi.md" },
+  { name: "龙神", desc: "PC 版 Switch 模拟器", cat: "simulator", url: "simulators/ryujinx.md" },
+  // 网站
+  { name: "VNDB", desc: "Galgame 资料数据库", cat: "website", url: "https://vndb.org" },
+  { name: "批评空间", desc: "Galgame 评分与评测平台", cat: "website", url: "https://erogamescape.dyndns.org" },
+  { name: "Bangumi", desc: "ACG 作品资料与评分平台", cat: "website", url: "https://bangumi.tv" },
+  // 工具
+  { name: "VNStat", desc: "Galgame 评分记录工具", cat: "tool", url: "https://vnstat.net" },
+];
+
+const tagMap = { simulator: "模拟器", website: "网站", tool: "工具" };
+const catClass = { simulator: "simulator", website: "website", tool: "tool" };
+
+function render(items) {
+  const el = document.getElementById("results");
+  if (!items.length) {
+    el.innerHTML = '<div class="empty">没有找到匹配的结果</div>';
+    return;
+  }
+  el.innerHTML = items.map(i => `
+    <div class="result-item">
+      <a href="${i.url}" target="_blank">${i.name}<span class="tag ${catClass[i.cat]}">${tagMap[i.cat]}</span></a>
+      <div class="desc">${i.desc}</div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("search").addEventListener("input", function(e) {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) {
+    document.getElementById("results").innerHTML = '<div class="hint">输入关键词开始搜索</div>';
+    return;
+  }
+  const matched = data.filter(d =>
+    d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)
+  );
+  render(matched);
+});
+</script>
+</body>
+</html>
