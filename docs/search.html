@@ -32,21 +32,22 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
   <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus disabled>
 </div>
 <div class="results" id="results">
-  <div class="loading" id="loading">正在加载索引…</div>
+  <div class="loading" id="loading">正在扫描仓库文件…</div>
 </div>
 
 <script>
-const RAW_BASE = "https://raw.githubusercontent.com/argb6/gal-tool/main";
+const API = "https://api.github.com/repos/argb6/gal-tool/contents";
 const GITHUB_BASE = "https://github.com/argb6/gal-tool/blob/main";
 
-const sources = [
-  { file: "simulators/README.md", cat: "simulator" },
-  { file: "websites/README.md",    cat: "website" },
-  { file: "tools/README.md",       cat: "tool" },
+const TAG_MAP = { simulator: "模拟器", website: "网站", tool: "工具" };
+const CAT_CLASS = { simulator: "simulator", website: "website", tool: "tool" };
+// 扫描的目录与分类映射
+const DIRS = [
+  { dir: "simulators", cat: "simulator" },
+  { dir: "websites",    cat: "website" },
+  { dir: "tools",       cat: "tool" },
 ];
 
-const tagMap = { simulator: "模拟器", website: "网站", tool: "工具" };
-const catClass = { simulator: "simulator", website: "website", tool: "tool" };
 let allData = [];
 
 function parseMarkdown(text, cat, baseDir) {
@@ -57,7 +58,6 @@ function parseMarkdown(text, cat, baseDir) {
     if (m) {
       let name = m[1], url = m[2], desc = m[3].replace(/^[-–—]\s*/, "");
       if (!url.startsWith("http")) {
-        // 相对链接基于所在 README 的目录解析
         url = GITHUB_BASE + "/" + baseDir + url;
       }
       items.push({ name, desc, cat, url });
@@ -67,30 +67,33 @@ function parseMarkdown(text, cat, baseDir) {
 }
 
 async function loadIndex() {
-  const results = await Promise.allSettled(
-    sources.map(s =>
-      fetch(RAW_BASE + "/" + s.file)
-        .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-        .then(t => parseMarkdown(t, s.cat, s.file.replace(/README\.md$/, "")))
-    )
-  );
-  allData = [];
-  let errors = [];
-  results.forEach((r, i) => {
-    if (r.status === "fulfilled") {
-      allData = allData.concat(r.value);
-    } else {
-      errors.push(sources[i].file);
-    }
-  });
-  document.getElementById("loading").style.display = "none";
-  if (errors.length) {
-    document.getElementById("results").innerHTML =
-      '<div class="error">索引加载失败：' + errors.join("、") + '</div>';
-  } else {
-    document.getElementById("results").innerHTML =
-      '<div class="empty">共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
+  let allItems = [];
+
+  for (const { dir, cat } of DIRS) {
+    try {
+      // 列出目录下所有文件
+      const listResp = await fetch(API + "/" + dir);
+      if (!listResp.ok) continue;
+      const files = await listResp.json();
+      const mdFiles = files.filter(f => f.name.endsWith(".md") && f.type === "file");
+
+      // 读取每个 .md 并解析
+      for (const f of mdFiles) {
+        try {
+          const rawResp = await fetch(f.download_url);
+          if (!rawResp.ok) continue;
+          const text = await rawResp.text();
+          const items = parseMarkdown(text, cat, dir + "/");
+          allItems = allItems.concat(items);
+        } catch (e) { /* skip single file */ }
+      }
+    } catch (e) { /* skip whole dir */ }
   }
+
+  allData = allItems;
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("results").innerHTML =
+    '<div class="empty">已扫描 ' + DIRS.length + ' 个目录，共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
   document.getElementById("search").disabled = false;
 }
 
@@ -102,7 +105,7 @@ function render(items) {
   }
   el.innerHTML = items.map(i => `
     <div class="result-item">
-      <a href="${i.url}" target="_blank">${i.name}<span class="tag ${catClass[i.cat]}">${tagMap[i.cat]}</span></a>
+      <a href="${i.url}" target="_blank">${i.name}<span class="tag ${CAT_CLASS[i.cat]}">${TAG_MAP[i.cat]}</span></a>
       <div class="desc">${i.desc}</div>
     </div>
   `).join("");
