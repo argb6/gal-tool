@@ -23,7 +23,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
 .loading { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
-.error { text-align: center; color: #ff7b72; padding: 20px 0; font-size: 14px; }
+.status { text-align: center; color: #484f58; font-size: 12px; margin-top: -20px; margin-bottom: 20px; }
 </style>
 </head>
 <body>
@@ -31,17 +31,16 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 <div class="search-box">
   <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus disabled>
 </div>
+<div class="status" id="status"></div>
 <div class="results" id="results">
-  <div class="loading" id="loading">正在扫描仓库文件…</div>
+  <div class="loading">正在加载…</div>
 </div>
 
 <script>
 const API = "https://api.github.com/repos/argb6/gal-tool/contents";
 const GITHUB_BASE = "https://github.com/argb6/gal-tool/blob/main";
-
 const TAG_MAP = { simulator: "模拟器", website: "网站", tool: "工具" };
 const CAT_CLASS = { simulator: "simulator", website: "website", tool: "tool" };
-// 扫描的目录与分类映射
 const DIRS = [
   { dir: "simulators", cat: "simulator" },
   { dir: "websites",    cat: "website" },
@@ -57,53 +56,27 @@ function parseMarkdown(text, cat, baseDir) {
     const m = line.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
     if (m) {
       let name = m[1], url = m[2], desc = m[3].replace(/^[-–—]\s*/, "");
-      if (!url.startsWith("http")) {
-        url = GITHUB_BASE + "/" + baseDir + url;
-      }
+      if (!url.startsWith("http")) url = GITHUB_BASE + "/" + baseDir + url;
       items.push({ name, desc, cat, url });
     }
   }
   return items;
 }
 
-async function loadIndex() {
-  let allItems = [];
-
-  for (const { dir, cat } of DIRS) {
-    try {
-      // 列出目录下所有文件
-      const listResp = await fetch(API + "/" + dir);
-      if (!listResp.ok) continue;
-      const files = await listResp.json();
-      const mdFiles = files.filter(f => f.name.endsWith(".md") && f.type === "file");
-
-      // 读取每个 .md 并解析
-      for (const f of mdFiles) {
-        try {
-          const rawResp = await fetch(f.download_url);
-          if (!rawResp.ok) continue;
-          const text = await rawResp.text();
-          const items = parseMarkdown(text, cat, dir + "/");
-          allItems = allItems.concat(items);
-        } catch (e) { /* skip single file */ }
-      }
-    } catch (e) { /* skip whole dir */ }
+function search(q) {
+  if (!q) {
+    document.getElementById("results").innerHTML = '<div class="empty">共收录 ' + allData.length + ' 个条目</div>';
+    return;
   }
-
-  allData = allItems;
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("results").innerHTML =
-    '<div class="empty">已扫描 ' + DIRS.length + ' 个目录，共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
-  document.getElementById("search").disabled = false;
-}
-
-function render(items) {
+  const matched = allData.filter(d =>
+    d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)
+  );
   const el = document.getElementById("results");
-  if (!items.length) {
+  if (!matched.length) {
     el.innerHTML = '<div class="empty">没有找到匹配的结果</div>';
     return;
   }
-  el.innerHTML = items.map(i => `
+  el.innerHTML = matched.map(i => `
     <div class="result-item">
       <a href="${i.url}" target="_blank">${i.name}<span class="tag ${CAT_CLASS[i.cat]}">${TAG_MAP[i.cat]}</span></a>
       <div class="desc">${i.desc}</div>
@@ -111,17 +84,52 @@ function render(items) {
   `).join("");
 }
 
-document.getElementById("search").addEventListener("input", function(e) {
-  const q = e.target.value.trim().toLowerCase();
-  if (!q) {
-    document.getElementById("results").innerHTML =
-      '<div class="empty">共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
-    return;
+async function loadIndex() {
+  const searchInput = document.getElementById("search");
+  const statusEl = document.getElementById("status");
+
+  // 第一步：只加载三个 README.md（最快的核心索引）
+  const readmeFetches = DIRS.map(async ({ dir, cat }) => {
+    const resp = await fetch(API + "/" + dir + "/README.md");
+    if (!resp.ok) return;
+    const file = await resp.json();
+    const raw = await fetch(file.download_url);
+    if (!raw.ok) return;
+    const text = await raw.text();
+    const items = parseMarkdown(text, cat, dir + "/");
+    allData = allData.concat(items);
+  });
+
+  await Promise.all(readmeFetches);
+  // README 加载完成，立刻开放搜索
+  searchInput.disabled = false;
+  statusEl.textContent = "已收录 " + allData.length + " 个条目（正在深度扫描更多文件…）";
+  search("");
+
+  // 第二步：并行扫描其他 .md 文件，边扫边追加
+  for (const { dir, cat } of DIRS) {
+    try {
+      const listResp = await fetch(API + "/" + dir);
+      if (!listResp.ok) continue;
+      const files = await listResp.json();
+      const others = files.filter(f => f.name.endsWith(".md") && f.name !== "README.md");
+
+      others.forEach(async f => {
+        try {
+          const rawResp = await fetch(f.download_url);
+          if (!rawResp.ok) return;
+          const text = await rawResp.text();
+          const items = parseMarkdown(text, cat, dir + "/");
+          allData = allData.concat(items);
+          statusEl.textContent = "已收录 " + allData.length + " 个条目";
+        } catch (e) {}
+      });
+    } catch (e) {}
   }
-  const matched = allData.filter(d =>
-    d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)
-  );
-  render(matched);
+}
+
+document.getElementById("search").addEventListener("input", function(e) {
+  search(e.target.value.trim().toLowerCase());
 });
 
 loadIndex();
