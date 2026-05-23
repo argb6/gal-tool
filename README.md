@@ -1,30 +1,29 @@
-# Galgame 工具与网站导航
+# Gal-Tool - Galgame 工具与网站导航
 
-**Gal-Tool** 是一个 Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的 Galgame 相关工具和优质网站链接，方便玩家快速找到所需资源。
+## 目录
 
-只做导航，不做开发。所有收录的内容均为外部已有工具和网站。
-
-# 目录
-
+- [简介](#简介)
 - [结构](#项目结构)
 - [导航](#导航)
+  - [模拟器](#模拟器)
   - [网站](#网站)
   - [工具](#工具)
 - [贡献](#贡献)
 - [贡献者](#贡献者)
 - [许可证](#许可证)
-- [版权说明](#版权声明)
+- [版权声明](#版权声明)
 
-# 简介
+## 简介
 
 **Gal-Tool** 是一个 Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的 Galgame 相关工具和优质网站链接，方便玩家快速找到所需资源。
 
 只做导航，不做开发。所有收录的内容均为外部已有工具和网站。
 
-# 项目结构
+## 项目结构
 
 ```
 gal-tool/
+├── simulators/           # 模拟器导航
 ├── websites/             # 网站导航集合
 ├── tools/                # 工具导航集合
 ├── README.md             # 项目首页
@@ -32,9 +31,20 @@ gal-tool/
 └── LICENSE               # CC BY 4.0
 ```
 
-# 导航
+## 导航
 
-## 网站
+### 模拟器
+
+收录 Android 端 Galgame 模拟器使用指南，包含以下方案：
+
+- [krkr](simulators/krkr.md)
+- [tyranor](simulators/tyranor.md)
+- [mine](simulators/mine.md)
+- [winlator](simulators/winlator.md)
+- [盖世游戏](simulators/gaishi.md)
+- [龙神](simulators/ryujinx.md)
+
+### 网站
 
 各类 Galgame 相关网站资源导航：
 
@@ -43,9 +53,9 @@ gal-tool/
 - 攻略站点
 - 资讯评测
 
-详见 [websites/](websites/README.md)
+详见 [网站导航](websites/README.md)
 
-## 工具
+### 工具
 
 各类 Galgame 玩家实用工具导航：
 
@@ -54,17 +64,24 @@ gal-tool/
 - 存档管理工具
 - 攻略辅助工具
 
-详见 [tools/](tools/README.md)
+详见 [工具导航](tools/README.md)
 
-# 贡献
+## 贡献
 
-发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 补充链接！详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 或 Pull Request 补充链接！详见 [贡献指南](CONTRIBUTING.md)。
 
-# 许可证
+## 贡献者
+
+感谢以下贡献者对本项目的支持：
+
+- [argb6](https://github.com/argb6)
+- [gaigai11311](https://github.com/gaigai11311)
+
+## 许可证
 
 本项目内容采用 [CC BY 4.0](LICENSE) 许可证。
 
-# 版权声明
+## 版权声明
 
 本仓库仅为导航性质，收录的所有工具、网站链接均指向第三方资源。各资源版权归原作者或平台所有。
 
