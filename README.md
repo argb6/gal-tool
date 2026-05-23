@@ -33,24 +33,34 @@ gal-tool/
 
 ## 导航
 
-###  [网站](websites/README.md)
+### 模拟器
+
+收录 Android 端 Galgame 模拟器使用指南，包含以下方案：
+
+- [krkr](simulators/krkr.md)
+- [tyranor](simulators/tyranor.md)
+- [mine](simulators/mine.md)
+- [winlator](simulators/winlator.md)
+- [盖世游戏](simulators/gaishi.md)
+- [龙神](simulators/ryujinx.md)
+
+### 网站
 
 各类 Galgame 相关网站资源导航：
 
-- 资料数据库（VNDB、批评空间、Bangumi 等）
-- 社区论坛
-- 攻略站点
-- 资讯评测
+- [<u>资料数据库</u>](websites/README.md)（VNDB、批评空间、Bangumi 等）
+- [<u>社区论坛</u>](websites/README.md)
+- [<u>攻略站点</u>](websites/README.md)
+- [<u>资讯评测</u>](websites/README.md)
 
-
-### [工具](tools/README.md)
+### 工具
 
 各类 Galgame 玩家实用工具导航：
 
-- 评分记录工具
-- 图鉴查询工具
-- 存档管理工具
-- 攻略辅助工具
+- [<u>评分记录工具</u>](tools/README.md)
+- [<u>图鉴查询工具</u>](tools/README.md)
+- [<u>存档管理工具</u>](tools/README.md)
+- [<u>攻略辅助工具</u>](tools/README.md)
 
 ## 贡献
 
