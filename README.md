@@ -1,50 +1,69 @@
-# Galgame 工具与网站导航
+# Gal-Tool - Galgame 工具与网站导航
 
-> [查看思维导图](mindmap.md)
+## 目录
 
-## 项目简介
+- [简介](#简介)
+- [结构](#项目结构)
+- [导航](#导航)
+  - [模拟器](#模拟器)
+  - [网站](#网站)
+  - [工具](#工具)
+- [贡献](#贡献)
+- [许可证](#许可证)
+- [版权说明](#版权声明)
+
+## 简介
 
 **Gal-Tool** 是一个 Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的 Galgame 相关工具和优质网站链接，方便玩家快速找到所需资源。
 
 只做导航，不做开发。所有收录的内容均为外部已有工具和网站。
 
-## 导航分类
-
-### 🛠️ 工具导航
-
-| 类型 | 说明 |
-|------|------|
-| 评分记录 | 作品评分、游玩进度追踪工具 |
-| 图鉴查询 | 角色、声优、画师、会社资料查询 |
-| 存档管理 | 存档下载、备份方案 |
-| 攻略辅助 | 路线分支查询、选项提示工具 |
-
-### 🌐 网站导航
-
-| 类型 | 说明 |
-|------|------|
-| 资料数据库 | VNDB、批评空间、Bangumi 等 |
-| 社区论坛 | 国内外 Galgame 讨论社区 |
-| 攻略站点 | 全路线攻略、隐藏要素 |
-| 资讯评测 | 新作情报、发售日历、玩家评测 |
-
 ## 项目结构
 
 ```
 gal-tool/
-├── simulators/           # 模拟器导航（查看 mindmap.md）
+├── simulators/           # 模拟器导航
 ├── websites/             # 网站导航集合
 ├── tools/                # 工具导航集合
-└── mindmap.md            # 思维导图
+├── README.md             # 项目首页
+├── CONTRIBUTING.md       # 贡献指南
+└── LICENSE               # CC BY 4.0
 ```
 
-## 快速开始
+## 导航
 
-```bash
-git clone https://github.com/argb6/gal-tool.git
-```
+### 模拟器
 
-进入对应目录即可浏览各类模拟器、工具和网站链接。
+收录 Android 端 Galgame 模拟器使用指南，包含以下方案：
+
+- [krkr](simulators/krkr.md)
+- [tyranor](simulators/tyranor.md)
+- [mine](simulators/mine.md)
+- [winlator](simulators/winlator.md)
+- [盖世游戏](simulators/gaishi.md)
+- [龙神](simulators/ryujinx.md)
+
+### 网站
+
+各类 Galgame 相关网站资源导航：
+
+- 资料数据库（VNDB、批评空间、Bangumi 等）
+- 社区论坛
+- 攻略站点
+- 资讯评测
+
+详见 [websites/](websites/README.md)
+
+### 工具
+
+各类 Galgame 玩家实用工具导航：
+
+- 评分记录工具
+- 图鉴查询工具
+- 存档管理工具
+- 攻略辅助工具
+
+详见 [tools/](tools/README.md)
 
 ## 贡献
 
@@ -58,7 +77,10 @@ git clone https://github.com/argb6/gal-tool.git
 
 本仓库仅为导航性质，收录的所有工具、网站链接均指向第三方资源。各资源版权归原作者或平台所有。
 
-若本仓库中的某些链接侵犯了您的权益，请通过以下方式联系，我们将在核实后第一时间删除相关内容
+若您认为本仓库中的某些链接侵犯了您的权益，请通过以下方式联系，我们将在核实后第一时间删除相关内容：
 
-- 📧 shenguang_2025@outlook.com
+- shenguang_2025@outlook.com
 
+---
+
+**Gal 路漫漫，导航不迷路。**
