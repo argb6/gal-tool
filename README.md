@@ -1,4 +1,4 @@
-# Gal-Tool - Galgame 工具与网站导航
+# Galgame 工具与网站导航
 
 **Gal-Tool** 是一个 Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的 Galgame 相关工具和优质网站链接，方便玩家快速找到所需资源。
 
