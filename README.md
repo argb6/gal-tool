@@ -5,7 +5,6 @@
 - [简介](#简介)
 - [结构](#项目结构)
 - [导航](#导航)
-  - [模拟器](#模拟器)
   - [网站](#网站)
   - [工具](#工具)
 - [贡献](#贡献)
@@ -23,7 +22,6 @@
 
 ```
 gal-tool/
-├── simulators/           # 模拟器导航
 ├── websites/             # 网站导航集合
 ├── tools/                # 工具导航集合
 ├── README.md             # 项目首页
@@ -32,17 +30,6 @@ gal-tool/
 ```
 
 ## 导航
-
-### 模拟器
-
-收录 Android 端 Galgame 模拟器使用指南，包含以下方案：
-
-- [krkr](simulators/krkr.md)
-- [tyranor](simulators/tyranor.md)
-- [mine](simulators/mine.md)
-- [winlator](simulators/winlator.md)
-- [盖世游戏](simulators/gaishi.md)
-- [龙神](simulators/ryujinx.md)
 
 ### 网站
 
