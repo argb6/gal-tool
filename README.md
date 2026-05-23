@@ -55,14 +55,7 @@ gal-tool/
 
 ## 贡献
 
-发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 或 Pull Request 补充链接！详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
-## 贡献者
-
-感谢以下贡献者对本项目的支持：
-
-- [argb6](https://github.com/argb6)
-- [gaigai11311](https://github.com/gaigai11311)
+发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 补充链接！详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 许可证
 
