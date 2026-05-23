@@ -34,6 +34,8 @@ gal-tool/
 
 ### 模拟器
 
+详见(simulators/README.md)
+
 按平台分类收录 Galgame 模拟器：
 
 - [Android](simulators/README.md#android)
@@ -42,6 +44,8 @@ gal-tool/
 
 ### 网站
 
+详见(websites/README.md)
+
 按资源类型分类收录：
 
 - [<u>补丁资源</u>](websites/README.md)（汉化补丁、修正补丁等）
@@ -49,6 +53,8 @@ gal-tool/
 - [<u>百科资源</u>](websites/README.md)（资料数据库、攻略百科等）
 
 ### 工具
+
+详见(tools/README.md)
 
 各类 Galgame 玩家实用工具导航：
 
@@ -59,7 +65,7 @@ gal-tool/
 
 ## 贡献
 
-发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 或 Pull Request 补充链接！详见 [贡献指南](CONTRIBUTING.md)。
+发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 或 Pull Request 补充链接！详见 [指南](CONTRIBUTING.md)。
 
 ## 许可证
 
