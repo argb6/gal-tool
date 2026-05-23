@@ -40,6 +40,8 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
 .loading { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
 .status { text-align: center; color: #484f58; font-size: 12px; margin-top: -20px; margin-bottom: 20px; }
+.home-section { display: block; }
+.searching .home-section { display: none; }
 </style>
 </head>
 <body>
@@ -49,52 +51,54 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 </div>
 <div class="status" id="status"></div>
 
-<div class="cat-links" id="catLinks">
-  <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
-    <div class="icon">🏠</div>
-    <div class="name">总仓库</div>
-    <div class="count">GitHub</div>
-  </a>
-  <a href="#" class="cat-link" id="simulatorLink">
-    <div class="icon">📱</div>
-    <div class="name">模拟器</div>
-    <div class="count" id="simulatorCount">0</div>
-  </a>
-  <a href="#" class="cat-link" id="websiteLink">
-    <div class="icon">🌐</div>
-    <div class="name">网站</div>
-    <div class="count" id="websiteCount">0</div>
-  </a>
-  <a href="#" class="cat-link" id="toolLink">
-    <div class="icon">🛠️</div>
-    <div class="name">工具</div>
-    <div class="count" id="toolCount">0</div>
-  </a>
-</div>
-
-<div class="stats" id="stats">
-  <div class="stat-card">
-    <div class="num" id="totalCount">0</div>
-    <div class="label">总条目数</div>
+<div class="home-section">
+  <div class="cat-links" id="catLinks">
+    <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
+      <div class="icon">🏠</div>
+      <div class="name">总仓库</div>
+      <div class="count">GitHub</div>
+    </a>
+    <a href="#" class="cat-link" id="simulatorLink">
+      <div class="icon">📱</div>
+      <div class="name">模拟器</div>
+      <div class="count" id="simulatorCount">0</div>
+    </a>
+    <a href="#" class="cat-link" id="websiteLink">
+      <div class="icon">🌐</div>
+      <div class="name">网站</div>
+      <div class="count" id="websiteCount">0</div>
+    </a>
+    <a href="#" class="cat-link" id="toolLink">
+      <div class="icon">🛠️</div>
+      <div class="name">工具</div>
+      <div class="count" id="toolCount">0</div>
+    </a>
   </div>
-  <div class="stat-card">
-    <div class="num" id="catCount">0</div>
-    <div class="label">分类数量</div>
-  </div>
-  <div class="stat-card">
-    <div class="num" id="updated">-</div>
-    <div class="label">最近更新</div>
-  </div>
-</div>
 
-<div class="quick-pick" id="randomPick">
-  <h3>🎲 网站随机推荐</h3>
-  <div class="item" id="randomItem">加载中…</div>
-</div>
+  <div class="stats" id="stats">
+    <div class="stat-card">
+      <div class="num" id="totalCount">0</div>
+      <div class="label">总条目数</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="catCount">0</div>
+      <div class="label">分类数量</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="updated">-</div>
+      <div class="label">最近更新</div>
+    </div>
+  </div>
 
-<div class="quick-pick" id="recentPick">
-  <h3>📅 最近新增</h3>
-  <div id="recentList">加载中…</div>
+  <div class="quick-pick" id="randomPick">
+    <h3>🎲 网站随机推荐</h3>
+    <div class="item" id="randomItem">加载中…</div>
+  </div>
+
+  <div class="quick-pick" id="recentPick">
+    <h3>📅 最近新增</h3>
+    <div id="recentList">加载中…</div>
+  </div>
 </div>
 
 <div class="results" id="results">
@@ -135,14 +139,12 @@ function updateStats() {
   document.getElementById("catCount").textContent = cats.size;
   document.getElementById("updated").textContent = lastUpdate || "-";
 
-  // 分类计数
   const counts = { simulator: 0, website: 0, tool: 0 };
   allData.forEach(d => counts[d.cat]++);
   document.getElementById("simulatorCount").textContent = counts.simulator;
   document.getElementById("websiteCount").textContent = counts.website;
   document.getElementById("toolCount").textContent = counts.tool;
 
-  // 分类链接
   document.getElementById("simulatorLink").href = GITHUB_BASE + "/simulators/README.md";
   document.getElementById("websiteLink").href = GITHUB_BASE + "/websites/README.md";
   document.getElementById("toolLink").href = GITHUB_BASE + "/tools/README.md";
@@ -173,9 +175,11 @@ function updateRecentPick() {
 
 function search(q) {
   if (!q) {
+    document.body.classList.remove("searching");
     document.getElementById("results").innerHTML = '<div class="empty">共收录 ' + allData.length + ' 个条目</div>';
     return;
   }
+  document.body.classList.add("searching");
   const matched = allData.filter(d =>
     d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)
   );
@@ -196,7 +200,6 @@ async function loadIndex() {
   const searchInput = document.getElementById("search");
   const statusEl = document.getElementById("status");
 
-  // 1. 加载 README
   const readmeFetches = DIRS.map(async ({ dir, cat }) => {
     const resp = await fetch(API + "/" + dir + "/README.md");
     if (!resp.ok) return;
@@ -216,7 +219,6 @@ async function loadIndex() {
   updateRandomPick();
   updateRecentPick();
 
-  // 2. 后台扫描其他 .md
   for (const { dir, cat } of DIRS) {
     try {
       const listResp = await fetch(API + "/" + dir);
@@ -240,7 +242,6 @@ async function loadIndex() {
     } catch (e) {}
   }
 
-  // 3. 获取最近更新时间
   try {
     const repoResp = await fetch("https://api.github.com/repos/argb6/gal-tool");
     const repo = await repoResp.json();
