@@ -21,6 +21,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .quick-pick .item a { color: #58a6ff; text-decoration: none; }
 .quick-pick .item a:hover { text-decoration: underline; }
 .quick-pick .desc { font-size: 12px; color: #8b949e; margin-left: 8px; }
+.quick-pick .hint { color: #8b949e; font-size: 13px; }
 .cat-links { display: flex; gap: 12px; margin-bottom: 24px; }
 .cat-link { flex: 1; background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; text-decoration: none; color: #c9d1d9; transition: border-color 0.2s; }
 .cat-link:hover { border-color: #58a6ff; }
@@ -38,7 +39,6 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag.website { background: #1f2a3a; color: #79c0ff; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
-.loading { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
 .home-section { display: block; }
 .searching .home-section { display: none; }
 </style>
@@ -71,11 +71,11 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
   </div>
   <div class="quick-pick" id="randomPick">
     <h3>🎲 网站随机推荐</h3>
-    <div class="item" id="randomItem">加载中…</div>
+    <div class="item" id="randomItem">暂无条目</div>
   </div>
   <div class="quick-pick" id="recentPick">
     <h3>📅 最近新增</h3>
-    <div id="recentList">加载中…</div>
+    <div id="recentList"><div class="hint">暂无条目</div></div>
   </div>
 </div>
 
@@ -110,13 +110,17 @@ function upd(){
   document.getElementById("simulatorLink").href=GITHUB+"/simulators/README.md";
   document.getElementById("websiteLink").href=GITHUB+"/websites/README.md";
   document.getElementById("toolLink").href=GITHUB+"/tools/README.md";
+
   let ws=all.filter(x=>x.c==="website");
   if(ws.length){
     let r=ws[Math.floor(Math.random()*ws.length)];
     document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span>';
   }
+
   let rc=[...all].slice(-3).reverse();
-  document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
+  if(rc.length){
+    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
+  }
 }
 
 function search(q){
@@ -127,23 +131,33 @@ function search(q){
   el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span></a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
 }
 
-async function load(){
+(async function(){
+  let ok=0;
   await Promise.all(DIRS.map(async({d,c})=>{
-    let r=await fetch(API+"/"+d+"/README.md");if(!r.ok)return;
-    let f=await r.json();
-    let t=await (await fetch(f.download_url)).text();
-    all=all.concat(parse(t,c,d+"/"));
+    try{
+      let r=await fetch(API+"/"+d+"/README.md");if(!r.ok)return;
+      let f=await r.json();
+      let t=await (await fetch(f.download_url)).text();
+      all=all.concat(parse(t,c,d+"/"));
+      ok++;
+    }catch(e){}
   }));
+
   upd();
+
+  if(ok===0){
+    document.getElementById("randomItem").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
+    document.getElementById("recentList").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
+    return;
+  }
+
   try{
     let r=await fetch("https://api.github.com/repos/argb6/gal-tool");
-    let j=await r.json();
-    document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");
+    if(r.ok){let j=await r.json();document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");}
   }catch(e){}
-}
+})();
 
 document.getElementById("search").addEventListener("input",e=>search(e.target.value.trim().toLowerCase()));
-load();
 </script>
 </body>
 </html>
