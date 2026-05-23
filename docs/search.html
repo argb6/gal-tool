@@ -22,37 +22,75 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag.website { background: #1f2a3a; color: #79c0ff; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
-.hint { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
+.loading { text-align: center; color: #484f58; padding: 60px 0; font-size: 15px; }
+.error { text-align: center; color: #ff7b72; padding: 20px 0; font-size: 14px; }
 </style>
 </head>
 <body>
 <h1>Galgame 工具与网站导航</h1>
 <div class="search-box">
-  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus>
+  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus disabled>
 </div>
 <div class="results" id="results">
-  <div class="hint">输入关键词开始搜索</div>
+  <div class="loading" id="loading">正在加载索引…</div>
 </div>
 
 <script>
-const data = [
-  // 模拟器
-  { name: "krkr", desc: "吉里吉里模拟器，支持 .xp3 格式", cat: "simulator", url: "simulators/krkr.md" },
-  { name: "tyranor", desc: "Android 端模拟器，兼容性优于 ONS", cat: "simulator", url: "simulators/tyranor.md" },
-  { name: "mine", desc: "轻量级模拟器，简单易用", cat: "simulator", url: "simulators/mine.md" },
-  { name: "winlator", desc: "在 Android 上运行 Windows 程序", cat: "simulator", url: "simulators/winlator.md" },
-  { name: "盖世游戏", desc: "游戏盒子类模拟器，对新手友好", cat: "simulator", url: "simulators/gaishi.md" },
-  { name: "龙神", desc: "PC 版 Switch 模拟器", cat: "simulator", url: "simulators/ryujinx.md" },
-  // 网站
-  { name: "VNDB", desc: "Galgame 资料数据库", cat: "website", url: "https://vndb.org" },
-  { name: "批评空间", desc: "Galgame 评分与评测平台", cat: "website", url: "https://erogamescape.dyndns.org" },
-  { name: "Bangumi", desc: "ACG 作品资料与评分平台", cat: "website", url: "https://bangumi.tv" },
-  // 工具
-  { name: "VNStat", desc: "Galgame 评分记录工具", cat: "tool", url: "https://vnstat.net" },
+const BASE = "https://raw.githubusercontent.com/argb6/gal-tool/main";
+
+const sources = [
+  { file: "simulators/README.md", cat: "simulator", baseUrl: "simulators/" },
+  { file: "websites/README.md",    cat: "website",    baseUrl: "websites/" },
+  { file: "tools/README.md",       cat: "tool",       baseUrl: "tools/" },
 ];
 
 const tagMap = { simulator: "模拟器", website: "网站", tool: "工具" };
 const catClass = { simulator: "simulator", website: "website", tool: "tool" };
+let allData = [];
+
+function parseMarkdown(text, cat, baseUrl) {
+  const items = [];
+  const lines = text.split("\n");
+  for (const line of lines) {
+    const m = line.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
+    if (m) {
+      let name = m[1], url = m[2], desc = m[3].replace(/^[-–—]\s*/, "");
+      if (!url.startsWith("http")) {
+        url = baseUrl + url;
+      }
+      items.push({ name, desc, cat, url });
+    }
+  }
+  return items;
+}
+
+async function loadIndex() {
+  const results = await Promise.allSettled(
+    sources.map(s =>
+      fetch(BASE + "/" + s.file)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+        .then(t => parseMarkdown(t, s.cat, s.baseUrl))
+    )
+  );
+  allData = [];
+  let errors = [];
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled") {
+      allData = allData.concat(r.value);
+    } else {
+      errors.push(sources[i].file + " (" + r.reason + ")");
+    }
+  });
+  document.getElementById("loading").style.display = "none";
+  if (errors.length) {
+    document.getElementById("results").innerHTML =
+      '<div class="error">部分索引加载失败：' + errors.join("、") + '</div>';
+  } else {
+    document.getElementById("results").innerHTML =
+      '<div class="empty">共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
+  }
+  document.getElementById("search").disabled = false;
+}
 
 function render(items) {
   const el = document.getElementById("results");
@@ -71,14 +109,17 @@ function render(items) {
 document.getElementById("search").addEventListener("input", function(e) {
   const q = e.target.value.trim().toLowerCase();
   if (!q) {
-    document.getElementById("results").innerHTML = '<div class="hint">输入关键词开始搜索</div>';
+    document.getElementById("results").innerHTML =
+      '<div class="empty">共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
     return;
   }
-  const matched = data.filter(d =>
+  const matched = allData.filter(d =>
     d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q)
   );
   render(matched);
 });
+
+loadIndex();
 </script>
 </body>
 </html>
