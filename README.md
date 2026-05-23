@@ -22,7 +22,6 @@
 
 ```
 gal-tool/
-├── simulators/           # 模拟器导航
 ├── websites/             # 网站导航集合
 ├── tools/                # 工具导航集合
 ├── README.md             # 项目首页
