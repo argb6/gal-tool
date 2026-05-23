@@ -1,4 +1,4 @@
-# Gal-Tool - Galgame 工具与网站导航
+# Galgame 工具与网站导航
 
 > [查看思维导图](mindmap.md)
 
