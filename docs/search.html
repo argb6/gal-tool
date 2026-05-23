@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Galgame 工具与网站导航 - 搜索</title>
+<title>Galgame 工具与网站导航</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 700px; margin: 0 auto; }
@@ -36,19 +36,20 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 </div>
 
 <script>
-const BASE = "https://raw.githubusercontent.com/argb6/gal-tool/main";
+const RAW_BASE = "https://raw.githubusercontent.com/argb6/gal-tool/main";
+const GITHUB_BASE = "https://github.com/argb6/gal-tool/blob/main";
 
 const sources = [
-  { file: "simulators/README.md", cat: "simulator", baseUrl: "simulators/" },
-  { file: "websites/README.md",    cat: "website",    baseUrl: "websites/" },
-  { file: "tools/README.md",       cat: "tool",       baseUrl: "tools/" },
+  { file: "simulators/README.md", cat: "simulator" },
+  { file: "websites/README.md",    cat: "website" },
+  { file: "tools/README.md",       cat: "tool" },
 ];
 
 const tagMap = { simulator: "模拟器", website: "网站", tool: "工具" };
 const catClass = { simulator: "simulator", website: "website", tool: "tool" };
 let allData = [];
 
-function parseMarkdown(text, cat, baseUrl) {
+function parseMarkdown(text, cat) {
   const items = [];
   const lines = text.split("\n");
   for (const line of lines) {
@@ -56,7 +57,7 @@ function parseMarkdown(text, cat, baseUrl) {
     if (m) {
       let name = m[1], url = m[2], desc = m[3].replace(/^[-–—]\s*/, "");
       if (!url.startsWith("http")) {
-        url = baseUrl + url;
+        url = GITHUB_BASE + "/" + url;
       }
       items.push({ name, desc, cat, url });
     }
@@ -67,9 +68,9 @@ function parseMarkdown(text, cat, baseUrl) {
 async function loadIndex() {
   const results = await Promise.allSettled(
     sources.map(s =>
-      fetch(BASE + "/" + s.file)
+      fetch(RAW_BASE + "/" + s.file)
         .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-        .then(t => parseMarkdown(t, s.cat, s.baseUrl))
+        .then(t => parseMarkdown(t, s.cat))
     )
   );
   allData = [];
@@ -78,13 +79,13 @@ async function loadIndex() {
     if (r.status === "fulfilled") {
       allData = allData.concat(r.value);
     } else {
-      errors.push(sources[i].file + " (" + r.reason + ")");
+      errors.push(sources[i].file);
     }
   });
   document.getElementById("loading").style.display = "none";
   if (errors.length) {
     document.getElementById("results").innerHTML =
-      '<div class="error">部分索引加载失败：' + errors.join("、") + '</div>';
+      '<div class="error">索引加载失败：' + errors.join("、") + '</div>';
   } else {
     document.getElementById("results").innerHTML =
       '<div class="empty">共收录 ' + allData.length + ' 个条目，输入关键词开始搜索</div>';
