@@ -48,9 +48,9 @@ gal-tool/
 
 按资源类型分类收录：
 
-- [<u>补丁资源</u>](websites/README.md#补丁资源)（汉化补丁、修正补丁等）
-- [<u>游戏资源</u>](websites/README.md#游戏资源)（正版购买、下载渠道等）
-- [<u>百科资源</u>](websites/README.md#百科资源)（资料数据库、攻略百科等）
+- [<u>补丁资源</u>](websites/README.md#补丁资源)
+- [<u>游戏资源</u>](websites/README.md#游戏资源)
+- [<u>百科资源</u>](websites/README.md#百科资源)
 
 ### 工具
 
