@@ -253,7 +253,7 @@ function search(q){
   }
 
   try{
-    let r=await fetch("https://api.github.com/repos/argb6/gal-tool");
+    let r=await fetch("https://api.github.com/repos/argb6/gal-navigation");
     if(r.ok){let j=await r.json();document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");}
   }catch(e){}
 
