@@ -243,6 +243,7 @@ function refreshAllStatus(){
 let _searchStatePushed=false;
 
 function search(q){
+  closeHistory();
   document.getElementById("search").value=q||"";
   if(!q){
     document.body.classList.remove("searching");
@@ -342,8 +343,11 @@ function clearHistory() {
 }
 
 document.addEventListener("click", function(e) {
-  let box = document.querySelector(".search-box");
-  if (box && !box.contains(e.target)) closeHistory();
+  let dd = document.getElementById("histDropdown");
+  let btn = document.getElementById("histBtn");
+  if (dd && dd.classList.contains("show") && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+    closeHistory();
+  }
 });
 
 (async function(){
