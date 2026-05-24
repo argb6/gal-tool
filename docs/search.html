@@ -6,7 +6,7 @@
 <title>Galgame 工具与网站导航</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 780px; margin: 0 auto; }
+body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 960px; margin: 0 auto; }
 h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .search-box { position: relative; margin-bottom: 32px; }
 .search-box input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; }
@@ -32,16 +32,20 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag.simulator { background: #1f3a1f; color: #7ee787; }
 .tag.website { background: #1f2a3a; color: #79c0ff; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
+.tag-label { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #1c2128; color: #8b949e; margin: 1px 2px; }
 
 /* result table */
 .result-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-.result-table th { text-align: left; padding: 10px 14px; font-size: 12px; color: #8b949e; font-weight: 600; border-bottom: 1px solid #21262d; }
-.result-table td { padding: 12px 14px; border-bottom: 1px solid #21262d; vertical-align: middle; font-size: 14px; }
+.result-table th { text-align: left; padding: 10px 12px; font-size: 12px; color: #8b949e; font-weight: 600; border-bottom: 1px solid #21262d; white-space: nowrap; }
+.result-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; vertical-align: middle; font-size: 14px; }
 .result-table tr:hover td { background: #1c2128; }
-.result-table .col-name { width: auto; }
-.result-table .col-cat { width: 80px; white-space: nowrap; }
-.result-table .col-status { width: 60px; text-align: center; font-size: 16px; }
-.result-table .col-links { width: 170px; white-space: nowrap; text-align: right; }
+.result-table .col-name { min-width: 100px; }
+.result-table .col-desc { color: #8b949e; font-size: 13px; }
+.result-table .col-cat { width: 70px; white-space: nowrap; }
+.result-table .col-tags { min-width: 80px; }
+.result-table .col-status { width: 55px; text-align: center; font-size: 16px; }
+.result-table .col-repo { width: 85px; white-space: nowrap; text-align: center; }
+.result-table .col-link { width: 85px; white-space: nowrap; text-align: center; }
 .result-table .name-link { color: #58a6ff; text-decoration: none; font-weight: 600; }
 .result-table .name-link:hover { text-decoration: underline; }
 
@@ -51,10 +55,10 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .status-unknown { color: #484f58; }
 
 /* buttons */
-.btn-repo-go, .btn-link-go { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; text-decoration: none; font-weight: 500; color: #fff; vertical-align: middle; }
+.btn-repo-go, .btn-link-go { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; text-decoration: none; font-weight: 500; color: #fff; }
 .btn-repo-go { background: #0366d6; }
 .btn-repo-go:hover { background: #0550b3; }
-.btn-link-go { background: #28a745; margin-left: 6px; }
+.btn-link-go { background: #28a745; }
 .btn-link-go:hover { background: #218838; }
 
 .link-info { font-size: 11px; color: #484f58; margin-top: 12px; }
@@ -67,22 +71,22 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 <body>
 <h1>Galgame 工具与网站导航</h1>
 <div class="search-box">
-  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus>
+  <input type="text" id="search" placeholder="搜索名称、标签或类别..." autofocus>
 </div>
 
 <div class="home-section">
   <div class="cat-links" id="catLinks">
     <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
-      <div class="icon">🏠</div><div class="name">总仓库</div><div class="count">GitHub</div>
+      <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
     </a>
     <a href="#" class="cat-link" id="simulatorLink">
-      <div class="icon">📱</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
+      <div class="icon">&#x1F4F1;</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
     </a>
     <a href="#" class="cat-link" id="websiteLink">
-      <div class="icon">🌐</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
+      <div class="icon">&#x1F310;</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
     </a>
     <a href="#" class="cat-link" id="toolLink">
-      <div class="icon">🛠️</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
+      <div class="icon">&#x1F6E0;</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
     </a>
   </div>
   <div class="stats">
@@ -91,11 +95,11 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
     <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
   </div>
   <div class="quick-pick" id="randomPick">
-    <h3>🎲 网站随机推荐</h3>
+    <h3>&#x1F3B2; 网站随机推荐</h3>
     <div class="item" id="randomItem">暂无条目</div>
   </div>
   <div class="quick-pick" id="recentPick">
-    <h3>📅 最近新增</h3>
+    <h3>&#x1F4C5; 最近新增</h3>
     <div id="recentList"><div class="hint">暂无条目</div></div>
   </div>
 </div>
@@ -117,9 +121,18 @@ function parse(t,c,dir){
   let r=[];
   t.split("\n").forEach(l=>{
     let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
-    if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\s*/,"");
-    if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
-    let gh=GITHUB+"/"+dir+m[2];r.push({n,d,c,u,gh});}
+    if(m){
+      let n=m[1],u=m[2],raw=m[3];
+      raw=raw.replace(/^[-–—]\s*/,"");
+      // extract tags
+      let tags=[],d=raw;
+      let tm,re=/`([^`]+)`/g;
+      while((tm=re.exec(raw))!==null)tags.push(tm[1]);
+      if(tags.length)d=raw.replace(/\s*`[^`]+`\s*/g," ").trim();
+      if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
+      let gh=GITHUB+"/"+dir+m[2];
+      r.push({n,d,c,u,gh,tags});
+    }
   });
   return r;
 }
@@ -127,8 +140,13 @@ function parse(t,c,dir){
 function statusText(url){
   let s=linkStatus[url];
   if(s===undefined)return'<span class="status-unknown" title="未检测">?</span>';
-  if(200<=s&&s<400)return'<span class="status-live" title="正常 HTTP '+s+'">✓</span>';
-  return'<span class="status-dead" title="失效 HTTP '+s+'">✗</span>';
+  if(200<=s&&s<400)return'<span class="status-live" title="正常 HTTP '+s+'">&#x2713;</span>';
+  return'<span class="status-dead" title="失效 HTTP '+s+'">&#x2717;</span>';
+}
+
+function tagsHtml(tags){
+  if(!tags||!tags.length)return'<span class="tag-label">-</span>';
+  return tags.map(t=>'<span class="tag-label">'+t+'</span>').join("");
 }
 
 function makeBtns(i){
@@ -151,12 +169,12 @@ function upd(){
   let ws=all.filter(x=>x.c==="website");
   if(ws.length){
     let r=ws[Math.floor(Math.random()*ws.length)];
-    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
+    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
   }
 
   let rc=[...all].slice(-3).reverse();
   if(rc.length){
-    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+makeBtns(r)+'<span class="desc">'+r.d+'</span></div>').join("");
+    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span></div>').join("");
   }
 
   if(checkedAt){
@@ -168,18 +186,26 @@ function upd(){
 function search(q){
   if(!q){document.body.classList.remove("searching");document.getElementById("results").innerHTML="";return;}
   document.body.classList.add("searching");
-  let m=all.filter(x=>x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q));
+  q=q.toLowerCase();
+  let m=all.filter(x=>
+    x.n.toLowerCase().includes(q) ||
+    TAG[x.c].includes(q) ||
+    (x.tags||[]).some(t=>t.toLowerCase().includes(q))
+  );
   let el=document.getElementById("results");
   if(!m.length){el.innerHTML='<div class="empty">没有找到匹配的结果</div>';return;}
   let rows=m.map(i=>
     '<tr>'+
     '<td class="col-name"><a href="'+i.u+'" target="_blank" class="name-link">'+i.n+'</a></td>'+
+    '<td class="col-desc">'+i.d+'</td>'+
     '<td class="col-cat"><span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span></td>'+
+    '<td class="col-tags">'+tagsHtml(i.tags)+'</td>'+
     '<td class="col-status">'+statusText(i.u)+'</td>'+
-    '<td class="col-links">'+makeBtns(i)+'</td>'+
+    '<td class="col-repo"><a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(i.c==="website"?'<a href="'+i.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
     '</tr>'
   ).join("");
-  el.innerHTML='<table class="result-table"><thead><tr><th>名称</th><th>类别</th><th>状态</th><th>链接</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  el.innerHTML='<table class="result-table"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
 (async function(){
