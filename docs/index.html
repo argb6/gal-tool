@@ -3,193 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Galgame 工具与网站导航</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 700px; margin: 0 auto; }
-h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
-.search-box { position: relative; margin-bottom: 32px; }
-.search-box input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; }
-.search-box input:focus { border-color: #58a6ff; }
-.stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-.stat-card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; min-width: 140px; flex: 1; }
-.stat-card .num { font-size: 24px; font-weight: 600; color: #f0f6fc; }
-.stat-card .label { font-size: 12px; color: #8b949e; margin-top: 4px; }
-.quick-pick { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
-.quick-pick h3 { font-size: 16px; margin-bottom: 12px; color: #f0f6fc; }
-.quick-pick .item { margin-bottom: 8px; }
-.quick-pick .item a { color: #58a6ff; text-decoration: none; }
-.quick-pick .item a:hover { text-decoration: underline; }
-.quick-pick .desc { font-size: 12px; color: #8b949e; margin-left: 8px; }
-.quick-pick .hint { color: #8b949e; font-size: 13px; }
-.cat-links { display: flex; gap: 12px; margin-bottom: 24px; }
-.cat-link { flex: 1; background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; text-decoration: none; color: #c9d1d9; transition: border-color 0.2s; }
-.cat-link:hover { border-color: #58a6ff; }
-.cat-link .icon { font-size: 20px; margin-bottom: 8px; }
-.cat-link .name { font-size: 14px; font-weight: 600; }
-.cat-link .count { font-size: 11px; color: #8b949e; margin-top: 4px; }
-.results { margin-top: 16px; }
-.result-item { padding: 14px 16px; border: 1px solid #21262d; border-radius: 8px; margin-bottom: 10px; background: #161b22; transition: border-color 0.2s; }
-.result-item:hover { border-color: #58a6ff; }
-.result-item a { color: #58a6ff; text-decoration: none; font-size: 16px; font-weight: 600; }
-.result-item a:hover { text-decoration: underline; }
-.result-item .desc { color: #8b949e; font-size: 13px; margin-top: 4px; }
-.result-item .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 8px; background: #21262d; color: #8b949e; }
-.tag.simulator { background: #1f3a1f; color: #7ee787; }
-.tag.website { background: #1f2a3a; color: #79c0ff; }
-.tag.tool { background: #3a1f2a; color: #ffa198; }
-.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; vertical-align: middle; }
-.status-live { background: #3fb950; }
-.status-dead { background: #f85149; }
-.status-unknown { background: #484f58; }
-.link-info { font-size: 11px; color: #484f58; margin-top: 12px; }
-.link-info a { color: #58a6ff; }
-.empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
-.home-section { display: block; }
-.searching .home-section { display: none; }
+  body { background: #0d1117; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+  .loading { color: #8b949e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 14px; }
 </style>
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  var qs = location.search; // 保留参数（?desktop / ?mobile 等）
+  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua);
+
+  // iPadOS 13+ 伪装成 Mac，需额外判断
+  if (!isMobile && /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) {
+    isMobile = true;
+  }
+
+  var target = isMobile ? 'search_mobile.html' : 'search.html';
+  location.replace(target + qs);
+})();
+</script>
 </head>
 <body>
-<h1>Galgame 工具与网站导航</h1>
-<div class="search-box">
-  <input type="text" id="search" placeholder="搜索模拟器、网站、工具..." autofocus>
-</div>
-
-<div class="home-section">
-  <div class="cat-links" id="catLinks">
-    <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
-      <div class="icon">🏠</div><div class="name">总仓库</div><div class="count">GitHub</div>
-    </a>
-    <a href="#" class="cat-link" id="simulatorLink">
-      <div class="icon">📱</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
-    </a>
-    <a href="#" class="cat-link" id="websiteLink">
-      <div class="icon">🌐</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
-    </a>
-    <a href="#" class="cat-link" id="toolLink">
-      <div class="icon">🛠️</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
-    </a>
-  </div>
-  <div class="stats">
-    <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">总条目数</div></div>
-    <div class="stat-card"><div class="num" id="catCount">0</div><div class="label">分类数量</div></div>
-    <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
-  </div>
-  <div class="quick-pick" id="randomPick">
-    <h3>🎲 网站随机推荐</h3>
-    <div class="item" id="randomItem">暂无条目</div>
-  </div>
-  <div class="quick-pick" id="recentPick">
-    <h3>📅 最近新增</h3>
-    <div id="recentList"><div class="hint">暂无条目</div></div>
-  </div>
-</div>
-
-<div class="results" id="results"></div>
-<div class="link-info" id="linkInfo"></div>
-
-<script>
-const API="https://api.github.com/repos/argb6/gal-tool/contents";
-const GITHUB="https://github.com/argb6/gal-tool/blob/main";
-const TAG={simulator:"模拟器",website:"网站",tool:"工具"};
-const CLS={simulator:"simulator",website:"website",tool:"tool"};
-const DIRS=[{d:"simulators",c:"simulator"},{d:"websites",c:"website"},{d:"tools",c:"tool"}];
-let all=[];
-let linkStatus={};
-let checkedAt="";
-
-function parse(t,c,dir){
-  let r=[];
-  t.split("\n").forEach(l=>{
-    let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
-    if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\s*/,"");
-    if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
-    r.push({n,d,c,u});}
-  });
-  return r;
-}
-
-function statusDot(url){
-  let s=linkStatus[url];
-  if(s===undefined)return'<span class="status-dot status-unknown" title="未检测"></span>';
-  if(200<=s&&s<400)return'<span class="status-dot status-live" title="正常 HTTP '+s+'"></span>';
-  return'<span class="status-dot status-dead" title="失效 HTTP '+s+'"></span>';
-}
-
-function upd(){
-  let c={simulator:0,website:0,tool:0};all.forEach(x=>c[x.c]++);
-  document.getElementById("totalCount").textContent=all.length;
-  document.getElementById("catCount").textContent=new Set(all.map(x=>x.c)).size;
-  document.getElementById("simulatorCount").textContent=c.simulator;
-  document.getElementById("websiteCount").textContent=c.website;
-  document.getElementById("toolCount").textContent=c.tool;
-  document.getElementById("simulatorLink").href=GITHUB+"/simulators/README.md";
-  document.getElementById("websiteLink").href=GITHUB+"/websites/README.md";
-  document.getElementById("toolLink").href=GITHUB+"/tools/README.md";
-
-  let ws=all.filter(x=>x.c==="website");
-  if(ws.length){
-    let r=ws[Math.floor(Math.random()*ws.length)];
-    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span>';
-  }
-
-  let rc=[...all].slice(-3).reverse();
-  if(rc.length){
-    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
-  }
-
-  if(checkedAt){
-    let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
-    document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-tool/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
-  }
-}
-
-function search(q){
-  if(!q){document.body.classList.remove("searching");document.getElementById("results").innerHTML="";return;}
-  document.body.classList.add("searching");
-  let m=all.filter(x=>x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q));
-  let el=document.getElementById("results");
-  el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span>'+statusDot(i.u)+'</a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
-}
-
-(async function(){
-  let ok=0;
-  await Promise.all(DIRS.map(async({d,c})=>{
-    try{
-      let r=await fetch(API+"/"+d+"/README.md");if(!r.ok)return;
-      let f=await r.json();
-      let t=await (await fetch(f.download_url)).text();
-      all=all.concat(parse(t,c,d+"/"));
-      ok++;
-    }catch(e){}
-  }));
-
-  upd();
-
-  if(ok===0){
-    document.getElementById("randomItem").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
-    document.getElementById("recentList").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
-    return;
-  }
-
-  try{
-    let r=await fetch("https://api.github.com/repos/argb6/gal-tool");
-    if(r.ok){let j=await r.json();document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");}
-  }catch(e){}
-
-  // 加载链接状态报告
-  try{
-    let r=await fetch("link-status.json?t="+Date.now());
-    if(r.ok){
-      let j=await r.json();
-      linkStatus=j.status||{};
-      checkedAt=j.checked_at||"";
-      upd();
-    }
-  }catch(e){}
-})();
-
-document.getElementById("search").addEventListener("input",e=>search(e.target.value.trim().toLowerCase()));
-</script>
+<div class="loading">正在跳转…</div>
 </body>
 </html>
