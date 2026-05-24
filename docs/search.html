@@ -229,10 +229,24 @@ function refreshAllStatus(){
   }
 }
 
+let _searchStatePushed=false;
+
 function search(q){
   document.getElementById("search").value=q||"";
-  if(!q){document.body.classList.remove("searching");document.getElementById("results").innerHTML="";return;}
+  if(!q){
+    document.body.classList.remove("searching");
+    document.getElementById("results").innerHTML="";
+    _searchStatePushed=false;
+    return;
+  }
   document.body.classList.add("searching");
+  // 浏览器的返回按钮/手机返回键：回到首页
+  if(!_searchStatePushed){
+    history.pushState({searching:true},"","#search");
+    _searchStatePushed=true;
+  }else{
+    history.replaceState({searching:true},"","#search");
+  }
   q=q.toLowerCase();
   let m=all.filter(x=>
     x.n.toLowerCase().includes(q) ||
@@ -294,6 +308,18 @@ function search(q){
 })();
 
 document.getElementById("search").addEventListener("input",e=>search(e.target.value.trim().toLowerCase()));
+
+// 浏览器返回按钮/手机返回键：退出搜索回到首页
+window.addEventListener("popstate",e=>{
+  if(e.state&&e.state.searching){
+    // 用户按了返回，从搜索结果回到首页
+    search("");
+    history.replaceState(null,"",location.pathname);
+  }
+});
+
+// 页面初始加载时，如果有 #search hash，清除它（防止刷新后仍在搜索状态）
+if(location.hash==="#search")history.replaceState(null,"",location.pathname);
 </script>
 </body>
 </html>
