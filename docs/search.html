@@ -89,6 +89,31 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .searching .home-section { display: none; }
 .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #30363d; border-top: 2px solid #58a6ff; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 8px; vertical-align: middle; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* 手机适配 */
+@media (max-width: 768px) {
+  body { padding: 20px 12px; max-width: none; }
+  h1 { font-size: 18px; }
+  .header-row { margin-bottom: 16px; }
+  .mode-switch { font-size: 11px; padding: 4px 10px; }
+  .search-box input { padding: 14px 40px 14px 14px; }
+  .search-box .hist-btn { right: 10px; font-size: 18px; padding: 6px 8px; }
+  .stats { gap: 8px; }
+  .stat-card { min-width: 0; padding: 12px; }
+  .stat-card .num { font-size: 20px; }
+  .quick-pick { padding: 16px; }
+  .category-cards { gap: 8px; }
+  .category-card { padding: 12px 16px; }
+  .category-card .icon { font-size: 20px; margin-bottom: 6px; }
+  .category-card .label { font-size: 12px; }
+  .result-table { min-width: 0; }
+  .result-row { grid-template-columns: 1fr 1fr 80px 80px 80px 80px; }
+  .result-row .name { font-size: 14px; }
+  .result-row .desc { font-size: 12px; }
+  .result-row .tags { font-size: 10px; }
+  .result-row .btn { font-size: 11px; padding: 4px 8px; }
+  .link-info { font-size: 12px; padding: 8px; }
+}
 </style>
 </head>
 <body>
