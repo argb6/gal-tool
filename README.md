@@ -22,8 +22,8 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 
 ```
 gal-tool/
-├── simulators/           # 模拟器导航（Android / iOS / Windows）
-├── websites/             # 网站导航集合（补丁 / 游戏 / 百科）
+├── simulators/           # 模拟器导航
+├── websites/             # 网站导航集合
 ├── tools/                # 工具导航集合
 ├── README.md             # 项目首页
 ├── CONTRIBUTING.md       # 贡献指南
