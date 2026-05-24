@@ -95,11 +95,11 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
     <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
   </div>
   <div class="quick-pick" id="randomPick">
-    <h3>&#x1F3B2; 网站随机推荐</h3>
+    <h3>&#x1F3B2; 随机推荐 <button onclick="pickRandom()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;margin-left:8px;">&#x1F3B2; 换一个</button></h3>
     <div class="item" id="randomItem">暂无条目</div>
   </div>
   <div class="quick-pick" id="recentPick">
-    <h3>&#x1F4C5; 最近新增</h3>
+    <h3>&#x1F4C5; 最近新增 <button onclick="showRecent()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;margin-left:8px;">&#x1F504; 换一批</button></h3>
     <div id="recentList"><div class="hint">暂无条目</div></div>
   </div>
 </div>
@@ -155,6 +155,16 @@ function makeBtns(i){
   return h;
 }
 
+function pickRandom(){
+  if(!all.length)return;
+  let r=all[Math.floor(Math.random()*all.length)];
+  document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
+}
+function showRecent(){
+  if(!all.length)return;
+  let rc=[...all].sort(()=>Math.random()-0.5).slice(0,3);
+  document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span></div>').join("");
+}
 function upd(){
   let c={simulator:0,website:0,tool:0};all.forEach(x=>c[x.c]++);
   document.getElementById("totalCount").textContent=all.length;
@@ -166,9 +176,8 @@ function upd(){
   document.getElementById("websiteLink").href=GITHUB+"/websites/README.md";
   document.getElementById("toolLink").href=GITHUB+"/tools/README.md";
 
-  let ws=all.filter(x=>x.c==="website");
-  if(ws.length){
-    let r=ws[Math.floor(Math.random()*ws.length)];
+  if(all.length){
+    let r=all[Math.floor(Math.random()*all.length)];
     document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
   }
 
@@ -176,6 +185,7 @@ function upd(){
   if(rc.length){
     document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span></div>').join("");
   }
+  if(all.length){pickRandom();}
 
   if(checkedAt){
     let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
