@@ -62,14 +62,6 @@ def main():
     print(f"\n{'='*60}")
     print(f"正常 {len(ok)} | 失效 {len(dead)} | 异常 {len(error)}")
 
-    # 输出 GitHub 注解，邮件中直接可见
-    if dead or error:
-        for e in dead:
-            print(f"::error file={e['file']},line={e['line']}::[{e['cat']}] {e['name']} 失效 HTTP {e['status']} {e['url']}")
-        for e in error:
-            print(f"::error file={e['file']},line={e['line']}::[{e['cat']}] {e['name']} 无法连接 {e['url']}")
-
-    # 保存报告
     report = {
         "checked_at": time.strftime("%Y-%m-%d %H:%M UTC"),
         "total": total,
@@ -82,6 +74,7 @@ def main():
     with open("docs/link-status.json", "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False)
 
+    # 有失效链接时生成 Issue 文件，但不退出
     if dead or error:
         dead_names = ", ".join([e["name"] for e in dead + error])
         body = f"## 以下链接已失效\n\n**检查时间**：{report['checked_at']}\n\n"
@@ -96,12 +89,19 @@ def main():
                 body += f"- [{e['cat']}] [{e['name']}]({e['url']}) — 连接失败\n"
         with open("issue_body.txt", "w", encoding="utf-8") as f:
             f.write(body)
-
-        # 把失效链接名写入单独文件，供 workflow 拼进 issue 标题
         with open("dead_names.txt", "w", encoding="utf-8") as f:
             f.write(dead_names)
 
-        sys.exit(1)
+        # 写入环境变量文件供 workflow 使用
+        with open(os.environ.get("GITHUB_ENV", "/dev/null"), "a") as f:
+            f.write("HAS_DEAD=true\n")
+
+        for e in dead:
+            print(f"  ❌ [{e['cat']}] {e['name']} | HTTP {e['status']} | {e['url']}")
+        for e in error:
+            print(f"  ⚠️ [{e['cat']}] {e['name']} | 无法连接 | {e['url']}")
+    else:
+        print("所有链接正常")
 
 if __name__ == "__main__":
     main()
