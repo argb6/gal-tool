@@ -149,12 +149,6 @@ function tagsHtml(tags){
   return tags.map(t=>'<span class="tag-label">'+t+'</span>').join("");
 }
 
-function makeBtns(i){
-  let h='<a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a>';
-  if(i.c==="website")h+='<a href="'+i.u+'" target="_blank" class="btn-link-go">链接直达</a>';
-  return h;
-}
-
 function pickRandom(){
   if(!all.length)return;
   let r=all[Math.floor(Math.random()*all.length)];
@@ -194,17 +188,7 @@ function upd(){
   document.getElementById("websiteLink").href=GITHUB+"/websites/README.md";
   document.getElementById("toolLink").href=GITHUB+"/tools/README.md";
 
-  if(all.length){
-    let r=all[Math.floor(Math.random()*all.length)];
-    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
-  }
-
   if(all.length){pickRandom();showRecent();}
-
-  if(checkedAt){
-    let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
-    document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-navigation/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
-  }
 }
 
 function search(q){
@@ -263,7 +247,9 @@ function search(q){
       let j=await r.json();
       linkStatus=j.status||{};
       checkedAt=j.checked_at||"";
-      upd();
+      let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
+      document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-navigation/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
+      if(all.length){pickRandom();showRecent();}
     }
   }catch(e){}
 })();
