@@ -44,6 +44,11 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .status-unknown { background: #484f58; }
 .link-info { font-size: 11px; color: #484f58; margin-top: 12px; }
 .link-info a { color: #58a6ff; }
+.btn-link-go, .btn-repo-go { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; text-decoration: none; margin-left: 6px; vertical-align: middle; }
+.btn-link-go { background: #28a745; color: #fff; }
+.btn-link-go:hover { background: #218838; }
+.btn-repo-go { background: #0366d6; color: #fff; }
+.btn-repo-go:hover { background: #0356b6; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
 .home-section { display: block; }
 .searching .home-section { display: none; }
@@ -104,7 +109,7 @@ function parse(t,c,dir){
     let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
     if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\s*/,"");
     if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
-    r.push({n,d,c,u});}
+    let gh=GITHUB+"/"+dir+m[2];r.push({n,d,c,u,gh});}
   });
   return r;
 }
@@ -130,12 +135,12 @@ function upd(){
   let ws=all.filter(x=>x.c==="website");
   if(ws.length){
     let r=ws[Math.floor(Math.random()*ws.length)];
-    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span>';
+    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a><span class="desc">'+r.d+'</span>';
   }
 
   let rc=[...all].slice(-3).reverse();
   if(rc.length){
-    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
+    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a><span class="desc">'+r.d+'</span></div>').join("");
   }
 
   if(checkedAt){
@@ -149,7 +154,7 @@ function search(q){
   document.body.classList.add("searching");
   let m=all.filter(x=>x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q));
   let el=document.getElementById("results");
-  el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span>'+statusDot(i.u)+'</a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
+  el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span>'+statusDot(i.u)+'</a><a href="'+i.u+'" target="_blank" class="btn-link-go">链接直达</a><a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
 }
 
 (async function(){
