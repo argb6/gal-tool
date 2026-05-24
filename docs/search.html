@@ -116,7 +116,7 @@ let checkedAt="";
 function parse(t,c,dir){
   let r=[];
   t.split("\\n").forEach(l=>{
-    let m=l.match(/^\\s*-\\s*\\[(.+?)\\]\\((.+?)\\)\\s*(.*)/);
+    let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
     if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\\s*/,"");
     if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
     let gh=GITHUB+"/"+dir+m[2];r.push({n,d,c,u,gh});}
