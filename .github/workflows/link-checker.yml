@@ -23,7 +23,8 @@ jobs:
         run: pip install httpx
 
       - name: 运行链接检查
-        run: python scripts/check_links.py
+        id: check
+        run: python scripts/check_links.py || echo "HAS_DEAD=true" >> $GITHUB_ENV
 
       - name: 提交检查报告
         run: |
@@ -34,14 +35,14 @@ jobs:
           git push
 
       - name: 创建 Issue
-        if: failure()
+        if: env.HAS_DEAD == 'true'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const body = fs.readFileSync('issue_body.txt', 'utf8');
             const deadNames = fs.readFileSync('dead_names.txt', 'utf8');
-            const title = '链接失效：' + deadNames;
+            const title = '链接失效通知：' + deadNames;
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
