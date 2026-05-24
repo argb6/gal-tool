@@ -14,9 +14,24 @@ if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 960px; margin: 0 auto; }
 h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
-.search-box { position: relative; margin-bottom: 32px; }
-.search-box input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; }
+.search-box { position: relative; margin-bottom: 32px; display: flex; align-items: center; }
+.search-box input { flex: 1; padding: 12px 40px 12px 16px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; }
 .search-box input:focus { border-color: #58a6ff; }
+.search-box .hist-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8b949e; font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 4px; line-height: 1; transition: color 0.2s, transform 0.2s; }
+.search-box .hist-btn:hover { color: #c9d1d9; }
+.search-box .hist-btn.open { transform: translateY(-50%) rotate(180deg); }
+.hist-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #161b22; border: 1px solid #30363d; border-radius: 0 0 8px 8px; border-top: none; z-index: 10; display: none; max-height: 200px; overflow-y: auto; }
+.hist-dropdown.show { display: block; }
+.hist-dropdown .hist-item { padding: 10px 16px; cursor: pointer; font-size: 14px; color: #c9d1d9; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; align-items: center; }
+.hist-dropdown .hist-item:hover { background: #1c2128; }
+.hist-dropdown .hist-item:last-child { border-bottom: none; }
+.hist-dropdown .hist-item .del-hist { color: #484f58; font-size: 12px; cursor: pointer; padding: 2px 6px; border-radius: 3px; }
+.hist-dropdown .hist-item .del-hist:hover { color: #f85149; background: #2d1518; }
+.hist-dropdown .hist-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-bottom: 1px solid #21262d; }
+.hist-dropdown .hist-header span { font-size: 11px; color: #8b949e; }
+.hist-dropdown .hist-header .trash-btn { background: none; border: none; color: #484f58; font-size: 14px; cursor: pointer; padding: 2px 4px; border-radius: 3px; }
+.hist-dropdown .hist-header .trash-btn:hover { color: #f85149; background: #2d1518; }
+.hist-dropdown .hist-empty { padding: 16px; text-align: center; font-size: 13px; color: #484f58; }
 .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
 .stat-card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; min-width: 140px; flex: 1; }
 .stat-card .num { font-size: 24px; font-weight: 600; color: #f0f6fc; }
@@ -69,12 +84,16 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
 .home-section { display: block; }
 .searching .home-section { display: none; }
+.loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #30363d; border-top: 2px solid #58a6ff; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 8px; vertical-align: middle; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <h1>Galgame 工具与网站导航</h1>
 <div class="search-box">
   <input type="text" id="search" placeholder="搜索名称、标签或类别..." autofocus>
+  <button class="hist-btn" id="histBtn" onclick="toggleHistory()" title="搜索历史">&#x25BC;</button>
+  <div class="hist-dropdown" id="histDropdown"></div>
 </div>
 
 <div class="home-section">
@@ -99,11 +118,11 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
   </div>
   <div class="quick-pick" id="randomPick">
     <h3>&#x1F3B2; 随机推荐 <button onclick="pickRandom()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;margin-left:8px;">&#x1F3B2; 换一个</button></h3>
-    <div class="item" id="randomItem">暂无条目</div>
+    <div class="item" id="randomItem"><span class="hint">加载中<span class="loading-spinner"></span></span></div>
   </div>
   <div class="quick-pick" id="recentPick">
     <h3>&#x1F4C5; 最近新增</h3>
-    <div id="recentList"><div class="hint">暂无条目</div></div>
+    <div id="recentList"><div class="hint">加载中<span class="loading-spinner"></span></div></div>
   </div>
 </div>
 
@@ -246,6 +265,7 @@ function search(q){
     return;
   }
   document.body.classList.add("searching");
+  saveHistory(q);
   // 浏览器的返回按钮/手机返回键：回到首页
   if(!_searchStatePushed){
     history.pushState({searching:true},"","#search");
@@ -274,6 +294,74 @@ function search(q){
   ).join("");
   el.innerHTML='<table class="result-table"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
+
+// ======== 搜索历史 ========
+const HIST_KEY = "gal_search_history";
+const MAX_HIST = 10;
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) { return []; }
+}
+
+function saveHistory(q) {
+  let h = getHistory();
+  h = h.filter(x => x !== q);
+  h.unshift(q);
+  if (h.length > MAX_HIST) h = h.slice(0, MAX_HIST);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+}
+
+function renderHistory() {
+  let h = getHistory();
+  let dd = document.getElementById("histDropdown");
+  if (!h.length) {
+    dd.innerHTML = '<div class="hist-empty">暂无搜索历史</div>';
+    return;
+  }
+  dd.innerHTML =
+    '<div class="hist-header"><span>搜索历史（' + h.length + '）</span><button class="trash-btn" title="清空所有历史" onclick="clearHistory()">&#x1F5D1;</button></div>' +
+    h.map(q =>
+      '<div class="hist-item" onclick="search(\'' + q.replace(/'/g, "\\'") + '\');closeHistory()">' +
+      '<span>' + q + '</span>' +
+      '<span class="del-hist" onclick="event.stopPropagation();deleteHistoryItem(\'' + q.replace(/'/g, "\\'") + '\')">&#x2715;</span>' +
+      '</div>'
+    ).join("");
+}
+
+function toggleHistory() {
+  let dd = document.getElementById("histDropdown");
+  let btn = document.getElementById("histBtn");
+  let isOpen = dd.classList.contains("show");
+  if (isOpen) {
+    closeHistory();
+  } else {
+    renderHistory();
+    dd.classList.add("show");
+    btn.classList.add("open");
+  }
+}
+
+function closeHistory() {
+  document.getElementById("histDropdown").classList.remove("show");
+  document.getElementById("histBtn").classList.remove("open");
+}
+
+function deleteHistoryItem(q) {
+  let h = getHistory().filter(x => x !== q);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+  renderHistory();
+}
+
+function clearHistory() {
+  localStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+document.addEventListener("click", function(e) {
+  let box = document.querySelector(".search-box");
+  if (box && !box.contains(e.target)) closeHistory();
+});
+// ======== 搜索历史 END ========
 
 (async function(){
   let ok=0;
@@ -313,7 +401,7 @@ function search(q){
   }catch(e){}
 })();
 
-document.getElementById("search").addEventListener("input",e=>search(e.target.value.trim().toLowerCase()));
+document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter")search(e.target.value.trim().toLowerCase())});
 
 // 浏览器返回按钮/手机返回键：退出搜索回到首页
 window.addEventListener("popstate",e=>{
