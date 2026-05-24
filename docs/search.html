@@ -76,7 +76,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 
 <div class="home-section">
   <div class="cat-links" id="catLinks">
-    <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
+    <a href="https://github.com/argb6/gal-navigation" class="cat-link" target="_blank">
       <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
     </a>
     <a href="#" class="cat-link" id="simulatorLink">
@@ -108,8 +108,8 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 <div class="link-info" id="linkInfo"></div>
 
 <script>
-const API="https://api.github.com/repos/argb6/gal-tool/contents";
-const GITHUB="https://github.com/argb6/gal-tool/blob/main";
+const API="https://api.github.com/repos/argb6/gal-navigation/contents";
+const GITHUB="https://github.com/argb6/gal-navigation/blob/main";
 const TAG={simulator:"模拟器",website:"网站",tool:"工具"};
 const CLS={simulator:"simulator",website:"website",tool:"tool"};
 const DIRS=[{d:"simulators",c:"simulator"},{d:"websites",c:"website"},{d:"tools",c:"tool"}];
@@ -203,7 +203,7 @@ function upd(){
 
   if(checkedAt){
     let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
-    document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-tool/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
+    document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-navigation/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
   }
 }
 
