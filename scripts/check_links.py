@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import httpx
 
 DIRS = ["simulators/README.md", "websites/README.md", "tools/README.md"]
-GITHUB_BASE = "https://github.com/argb6/gal-tool/blob/main"
+GITHUB_BASE = "https://github.com/argb6/gal-navigation/blob/main"
 TIMEOUT = 15
 MAX_WORKERS = 10
 
