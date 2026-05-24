@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" id="vp">
+<script>
+// 检测手机浏览器，强制使用 PC 端视口避免表格错位
+if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+  document.getElementById("vp").setAttribute("content","width=960, initial-scale=1.0");
+}
+</script>
+<title>Galgame 工具与网站导航</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 40px 20px; max-width: 960px; margin: 0 auto; }
+h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
+.search-box { position: relative; margin-bottom: 32px; display: flex; align-items: center; }
+.search-box input { flex: 1; padding: 12px 40px 12px 16px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; }
+.search-box input:focus { border-color: #58a6ff; }
+.search-box .hist-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8b949e; font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 4px; line-height: 1; transition: color 0.2s, transform 0.2s; }
+.search-box .hist-btn:hover { color: #c9d1d9; }
+.search-box .hist-btn.open { transform: translateY(-50%) rotate(180deg); }
+.hist-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #161b22; border: 1px solid #30363d; border-radius: 0 0 8px 8px; border-top: none; z-index: 10; display: none; max-height: 200px; overflow-y: auto; }
+.hist-dropdown.show { display: block; }
+.hist-dropdown .hist-item { padding: 10px 16px; cursor: pointer; font-size: 14px; color: #c9d1d9; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; align-items: center; }
+.hist-dropdown .hist-item:hover { background: #1c2128; }
+.hist-dropdown .hist-item:last-child { border-bottom: none; }
+.hist-dropdown .hist-item .del-hist { color: #484f58; font-size: 12px; cursor: pointer; padding: 2px 6px; border-radius: 3px; }
+.hist-dropdown .hist-item .del-hist:hover { color: #f85149; background: #2d1518; }
+.hist-dropdown .hist-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-bottom: 1px solid #21262d; }
+.hist-dropdown .hist-header span { font-size: 11px; color: #8b949e; }
+.hist-dropdown .hist-header .trash-btn { background: none; border: none; color: #484f58; font-size: 14px; cursor: pointer; padding: 2px 4px; border-radius: 3px; }
+.hist-dropdown .hist-header .trash-btn:hover { color: #f85149; background: #2d1518; }
+.hist-dropdown .hist-empty { padding: 16px; text-align: center; font-size: 13px; color: #484f58; }
+.stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat-card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; min-width: 140px; flex: 1; }
+.stat-card .num { font-size: 24px; font-weight: 600; color: #f0f6fc; }
+.stat-card .label { font-size: 12px; color: #8b949e; margin-top: 4px; }
+.quick-pick { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+.quick-pick h3 { font-size: 16px; margin-bottom: 12px; color: #f0f6fc; }
+.quick-pick .hint { color: #8b949e; font-size: 13px; }
+.cat-links { display: flex; gap: 12px; margin-bottom: 24px; }
+.cat-link { flex: 1; background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; text-decoration: none; color: #c9d1d9; transition: border-color 0.2s; }
+.cat-link:hover { border-color: #58a6ff; }
+.cat-link .icon { font-size: 20px; margin-bottom: 8px; }
+.cat-link .name { font-size: 14px; font-weight: 600; }
+.cat-link .count { font-size: 11px; color: #8b949e; margin-top: 4px; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #21262d; color: #8b949e; cursor: pointer; transition: opacity 0.2s; }
+.tag:hover { opacity: 0.8; }
+.tag.simulator { background: #1f3a1f; color: #7ee787; }
+.tag.website { background: #1f2a3a; color: #79c0ff; }
+.tag.tool { background: #3a1f2a; color: #ffa198; }
+.tag-label { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #1c2128; color: #8b949e; margin: 1px 2px; cursor: pointer; transition: background 0.2s; }
+.tag-label:hover { background: #30363d; }
+
+/* result table */
+.result-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.result-table th { text-align: left; padding: 10px 12px; font-size: 12px; color: #8b949e; font-weight: 600; border-bottom: 1px solid #21262d; white-space: nowrap; }
+.result-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; vertical-align: middle; font-size: 14px; }
+.result-table tr:hover td { background: #1c2128; }
+.result-table .col-name { min-width: 100px; }
+.result-table .col-desc { color: #8b949e; font-size: 13px; }
+.result-table .col-cat { width: 70px; white-space: nowrap; }
+.result-table .col-tags { min-width: 80px; }
+.result-table .col-status { width: 55px; text-align: center; font-size: 16px; }
+.result-table .col-repo { width: 85px; white-space: nowrap; text-align: center; }
+.result-table .col-link { width: 85px; white-space: nowrap; text-align: center; }
+.result-table .col-name span { font-weight: 600; color: #f0f6fc; }
+
+/* status text */
+.status-live { color: #3fb950; }
+.status-dead { color: #f85149; }
+.status-unknown { color: #484f58; }
+
+/* buttons */
+.btn-repo-go, .btn-link-go { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; text-decoration: none; font-weight: 500; color: #fff; }
+.btn-repo-go { background: #0366d6; }
+.btn-repo-go:hover { background: #0550b3; }
+.btn-link-go { background: #28a745; }
+.btn-link-go:hover { background: #218838; }
+
+.link-info { font-size: 11px; color: #484f58; margin-top: 12px; }
+.link-info a { color: #58a6ff; }
+.empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
+.home-section { display: block; }
+.searching .home-section { display: none; }
+.loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #30363d; border-top: 2px solid #58a6ff; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 8px; vertical-align: middle; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<h1>Galgame 工具与网站导航</h1>
+<div class="search-box">
+  <input type="text" id="search" placeholder="搜索名称、标签或类别..." autofocus>
+  <button class="hist-btn" id="histBtn" onclick="toggleHistory()" title="搜索历史">&#x25BC;</button>
+  <div class="hist-dropdown" id="histDropdown"></div>
+</div>
+
+<div class="home-section">
+  <div class="cat-links" id="catLinks">
+    <a href="https://github.com/argb6/gal-navigation" class="cat-link" target="_blank">
+      <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
+    </a>
+    <a href="#" class="cat-link" id="simulatorLink" onclick="search('模拟器');return false;">
+      <div class="icon">&#x1F4F1;</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
+    </a>
+    <a href="#" class="cat-link" id="websiteLink" onclick="search('网站');return false;">
+      <div class="icon">&#x1F310;</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
+    </a>
+    <a href="#" class="cat-link" id="toolLink" onclick="search('工具');return false;">
+      <div class="icon">&#x1F6E0;</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
+    </a>
+  </div>
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">总条目数</div></div>
+    <div class="stat-card"><div class="num" id="catCount">0</div><div class="label">分类数量</div></div>
+    <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
+  </div>
+  <div class="quick-pick" id="randomPick">
+    <h3>&#x1F3B2; 随机推荐 <button onclick="pickRandom()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;margin-left:8px;">&#x1F3B2; 换一个</button></h3>
+    <div class="item" id="randomItem"><span class="hint">加载中<span class="loading-spinner"></span></span></div>
+  </div>
+  <div class="quick-pick" id="recentPick">
+    <h3>&#x1F4C5; 最近新增</h3>
+    <div id="recentList"><div class="hint">加载中<span class="loading-spinner"></span></div></div>
+  </div>
+</div>
+
+<div class="results" id="results"></div>
+<div class="link-info" id="linkInfo"></div>
+
+<script>
+const API="https://api.github.com/repos/argb6/gal-navigation/contents";
+const GITHUB="https://github.com/argb6/gal-navigation/blob/main";
+const TAG={simulator:"模拟器",website:"网站",tool:"工具"};
+const CLS={simulator:"simulator",website:"website",tool:"tool"};
+const DIRS=[{d:"simulators",c:"simulator"},{d:"websites",c:"website"},{d:"tools",c:"tool"}];
+let all=[];
+let linkStatus={};
+let checkedAt="";
+
+function parse(t,c,dir){
+  let r=[],tagRe=/`([^`]+)`/g,cleanRe=/\s*`[^`]+`\s*/g;
+  t.split("\n").forEach(l=>{
+    let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
+    if(m){
+      let n=m[1],u=m[2],raw=m[3];
+      raw=raw.replace(/^[-–—]\s*/,"");
+      // extract tags
+      let tags=[],d=raw,tm;
+      tagRe.lastIndex=0;
+      while((tm=tagRe.exec(raw))!==null)tags.push(tm[1]);
+      if(tags.length)d=raw.replace(cleanRe," ").trim();
+      if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
+      let gh=GITHUB+"/"+dir+m[2];
+      r.push({n,d,c,u,gh,tags});
+    }
+  });
+  return r;
+}
+
+function statusText(url){
+  let s=linkStatus[url];
+  if(s===undefined)return'<span class="status-unknown" title="未检测">?</span>';
+  if(200<=s&&s<400)return'<span class="status-live" title="正常 HTTP '+s+'">&#x2713;</span>';
+  return'<span class="status-dead" title="失效 HTTP '+s+'">&#x2717;</span>';
+}
+
+function tagsHtml(tags){
+  if(!tags||!tags.length)return'<span class="tag-label">-</span>';
+  return tags.map(t=>'<span class="tag-label">'+t+'</span>').join("");
+}
+
+function pickRandom(){
+  if(!all.length)return;
+  let r=all[Math.floor(Math.random()*all.length)];
+  let row='<tr>'+
+    '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
+    '<td class="col-desc">'+r.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+TAG[r.c]+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
+    '<td class="col-status">'+statusText(r.u)+'</td>'+
+    '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>';
+  document.getElementById("randomItem").innerHTML='<table class="result-table" style="margin-top:0"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+row+'</tbody></table>';
+}
+function showRecent(){
+  if(!all.length)return;
+  let rc=[...all].slice(-3).reverse();
+  let rows=rc.map(r=>'<tr>'+
+    '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
+    '<td class="col-desc">'+r.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+TAG[r.c]+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
+    '<td class="col-status">'+statusText(r.u)+'</td>'+
+    '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>').join("");
+  document.getElementById("recentList").innerHTML='<table class="result-table" style="margin-top:0"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+function upd(){
+  let c={simulator:0,website:0,tool:0};all.forEach(x=>c[x.c]++);
+  document.getElementById("totalCount").textContent=all.length;
+  document.getElementById("catCount").textContent=new Set(all.map(x=>x.c)).size;
+  document.getElementById("simulatorCount").textContent=c.simulator;
+  document.getElementById("websiteCount").textContent=c.website;
+  document.getElementById("toolCount").textContent=c.tool;
+
+  if(all.length){pickRandom();showRecent();}
+}
+
+function refreshAllStatus(){
+  // 更新随机推荐表格中的状态
+  let randomTable=document.getElementById("randomItem").querySelector("table");
+  if(randomTable){
+    let row=randomTable.querySelector("tbody tr");
+    if(row){
+      // 从当前行的数据中获取 URL
+      let idx=all.findIndex(x=>x.n===row.querySelector(".col-name span").textContent);
+      if(idx>=0){
+        let url=all[idx].u;
+        row.querySelector(".col-status").innerHTML=statusText(url);
+      }
+    }
+  }
+  // 更新最近新增表格中的状态
+  let recentTable=document.getElementById("recentList").querySelector("table");
+  if(recentTable){
+    recentTable.querySelectorAll("tbody tr").forEach(tr=>{
+      let nameSpan=tr.querySelector(".col-name span");
+      if(nameSpan){
+        let name=nameSpan.textContent;
+        let item=all.find(x=>x.n===name);
+        if(item){
+          tr.querySelector(".col-status").innerHTML=statusText(item.u);
+        }
+      }
+    });
+  }
+  // 更新搜索结果表格中的状态
+  let resultTable=document.getElementById("results").querySelector("table");
+  if(resultTable){
+    resultTable.querySelectorAll("tbody tr").forEach(tr=>{
+      let nameSpan=tr.querySelector(".col-name span");
+      if(nameSpan){
+        let name=nameSpan.textContent;
+        let item=all.find(x=>x.n===name);
+        if(item){
+          tr.querySelector(".col-status").innerHTML=statusText(item.u);
+        }
+      }
+    });
+  }
+}
+
+let _searchStatePushed=false;
+
+function search(q){
+  document.getElementById("search").value=q||"";
+  if(!q){
+    document.body.classList.remove("searching");
+    document.getElementById("results").innerHTML="";
+    _searchStatePushed=false;
+    return;
+  }
+  document.body.classList.add("searching");
+  saveHistory(q);
+  // 浏览器的返回按钮/手机返回键：回到首页
+  if(!_searchStatePushed){
+    history.pushState({searching:true},"","#search");
+    _searchStatePushed=true;
+  }else{
+    history.replaceState({searching:true},"","#search");
+  }
+  q=q.toLowerCase();
+  let m=all.filter(x=>
+    x.n.toLowerCase().includes(q) ||
+    TAG[x.c].includes(q) ||
+    (x.tags||[]).some(t=>t.toLowerCase().includes(q))
+  );
+  let el=document.getElementById("results");
+  if(!m.length){el.innerHTML='<div class="empty">没有找到匹配的结果</div>';return;}
+  let rows=m.map(i=>
+    '<tr>'+
+    '<td class="col-name"><span title="'+i.n+'">'+i.n+'</span></td>'+
+    '<td class="col-desc">'+i.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[i.c]+'" onclick="search(\''+TAG[i.c]+'\')" title="点击搜索此类别">'+TAG[i.c]+'</span></td>'+
+    '<td class="col-tags">'+(i.tags&&i.tags.length?i.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
+    '<td class="col-status">'+statusText(i.u)+'</td>'+
+    '<td class="col-repo"><a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(i.c==="website"?'<a href="'+i.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>'
+  ).join("");
+  el.innerHTML='<table class="result-table"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+// ======== 搜索历史 ========
+const HIST_KEY = "gal_search_history";
+const MAX_HIST = 10;
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) { return []; }
+}
+
+function saveHistory(q) {
+  let h = getHistory();
+  h = h.filter(x => x !== q);
+  h.unshift(q);
+  if (h.length > MAX_HIST) h = h.slice(0, MAX_HIST);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+}
+
+function renderHistory() {
+  let h = getHistory();
+  let dd = document.getElementById("histDropdown");
+  if (!h.length) {
+    dd.innerHTML = '<div class="hist-empty">暂无搜索历史</div>';
+    return;
+  }
+  dd.innerHTML =
+    '<div class="hist-header"><span>搜索历史（' + h.length + '）</span><button class="trash-btn" title="清空所有历史" onclick="clearHistory()">&#x1F5D1;</button></div>' +
+    h.map(q =>
+      '<div class="hist-item" onclick="search(\'' + q.replace(/'/g, "\\'") + '\');closeHistory()">' +
+      '<span>' + q + '</span>' +
+      '<span class="del-hist" onclick="event.stopPropagation();deleteHistoryItem(\'' + q.replace(/'/g, "\\'") + '\')">&#x2715;</span>' +
+      '</div>'
+    ).join("");
+}
+
+function toggleHistory() {
+  let dd = document.getElementById("histDropdown");
+  let btn = document.getElementById("histBtn");
+  let isOpen = dd.classList.contains("show");
+  if (isOpen) {
+    closeHistory();
+  } else {
+    renderHistory();
+    dd.classList.add("show");
+    btn.classList.add("open");
+  }
+}
+
+function closeHistory() {
+  document.getElementById("histDropdown").classList.remove("show");
+  document.getElementById("histBtn").classList.remove("open");
+}
+
+function deleteHistoryItem(q) {
+  let h = getHistory().filter(x => x !== q);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+  renderHistory();
+}
+
+function clearHistory() {
+  localStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+document.addEventListener("click", function(e) {
+  let box = document.querySelector(".search-box");
+  if (box && !box.contains(e.target)) closeHistory();
+});
+// ======== 搜索历史 END ========
+
+(async function(){
+  let ok=0;
+  await Promise.all(DIRS.map(async({d,c})=>{
+    try{
+      let r=await fetch(API+"/"+d+"/README.md");if(!r.ok)return;
+      let f=await r.json();
+      let t=await (await fetch(f.download_url)).text();
+      all=all.concat(parse(t,c,d+"/"));
+      ok++;
+    }catch(e){}
+  }));
+
+  upd();
+
+  if(ok===0){
+    document.getElementById("randomItem").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
+    document.getElementById("recentList").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
+    return;
+  }
+
+  try{
+    let r=await fetch("https://api.github.com/repos/argb6/gal-navigation");
+    if(r.ok){let j=await r.json();document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");}
+  }catch(e){}
+
+  try{
+    let r=await fetch("link-status.json?t="+Date.now());
+    if(r.ok){
+      let j=await r.json();
+      linkStatus=j.status||{};
+      checkedAt=j.checked_at||"";
+      let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
+      document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-navigation/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
+      refreshAllStatus();
+    }
+  }catch(e){}
+})();
+
+document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter")search(e.target.value.trim().toLowerCase())});
+
+// 浏览器返回按钮/手机返回键：退出搜索回到首页
+window.addEventListener("popstate",e=>{
+  if(_searchStatePushed){
+    search("");
+  }
+});
+
+// 页面初始加载时，如果有 #search hash，清除它（防止刷新后仍在搜索状态）
+if(location.hash==="#search")history.replaceState(null,"",location.pathname);
+</script>
+</body>
+</html>
