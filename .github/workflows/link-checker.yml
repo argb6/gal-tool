@@ -23,8 +23,7 @@ jobs:
         run: pip install httpx
 
       - name: 运行链接检查
-        id: check
-        run: python scripts/check_links.py || echo "HAS_DEAD=true" >> $GITHUB_ENV
+        run: python scripts/check_links.py
 
       - name: 提交检查报告
         run: |
