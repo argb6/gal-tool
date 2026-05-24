@@ -38,6 +38,12 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag.simulator { background: #1f3a1f; color: #7ee787; }
 .tag.website { background: #1f2a3a; color: #79c0ff; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; vertical-align: middle; }
+.status-live { background: #3fb950; }
+.status-dead { background: #f85149; }
+.status-unknown { background: #484f58; }
+.link-info { font-size: 11px; color: #484f58; margin-top: 12px; }
+.link-info a { color: #58a6ff; }
 .empty { text-align: center; color: #8b949e; padding: 40px 0; font-size: 15px; }
 .home-section { display: block; }
 .searching .home-section { display: none; }
@@ -80,6 +86,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 </div>
 
 <div class="results" id="results"></div>
+<div class="link-info" id="linkInfo"></div>
 
 <script>
 const API="https://api.github.com/repos/argb6/gal-tool/contents";
@@ -88,6 +95,8 @@ const TAG={simulator:"模拟器",website:"网站",tool:"工具"};
 const CLS={simulator:"simulator",website:"website",tool:"tool"};
 const DIRS=[{d:"simulators",c:"simulator"},{d:"websites",c:"website"},{d:"tools",c:"tool"}];
 let all=[];
+let linkStatus={};
+let checkedAt="";
 
 function parse(t,c,dir){
   let r=[];
@@ -98,6 +107,13 @@ function parse(t,c,dir){
     r.push({n,d,c,u});}
   });
   return r;
+}
+
+function statusDot(url){
+  let s=linkStatus[url];
+  if(s===undefined)return'<span class="status-dot status-unknown" title="未检测"></span>';
+  if(200<=s&&s<400)return'<span class="status-dot status-live" title="正常 HTTP '+s+'"></span>';
+  return'<span class="status-dot status-dead" title="失效 HTTP '+s+'"></span>';
 }
 
 function upd(){
@@ -114,12 +130,17 @@ function upd(){
   let ws=all.filter(x=>x.c==="website");
   if(ws.length){
     let r=ws[Math.floor(Math.random()*ws.length)];
-    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span>';
+    document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span>';
   }
 
   let rc=[...all].slice(-3).reverse();
   if(rc.length){
-    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
+    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank">'+r.n+statusDot(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></a><span class="desc">'+r.d+'</span></div>').join("");
+  }
+
+  if(checkedAt){
+    let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
+    document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-tool/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
   }
 }
 
@@ -128,7 +149,7 @@ function search(q){
   document.body.classList.add("searching");
   let m=all.filter(x=>x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q));
   let el=document.getElementById("results");
-  el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span></a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
+  el.innerHTML=m.length?m.map(i=>'<div class="result-item"><a href="'+i.u+'" target="_blank">'+i.n+'<span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span>'+statusDot(i.u)+'</a><div class="desc">'+i.d+'</div></div>').join(""):'<div class="empty">没有找到匹配的结果</div>';
 }
 
 (async function(){
@@ -154,6 +175,17 @@ function search(q){
   try{
     let r=await fetch("https://api.github.com/repos/argb6/gal-tool");
     if(r.ok){let j=await r.json();document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");}
+  }catch(e){}
+
+  // 加载链接状态报告
+  try{
+    let r=await fetch("link-status.json?t="+Date.now());
+    if(r.ok){
+      let j=await r.json();
+      linkStatus=j.status||{};
+      checkedAt=j.checked_at||"";
+      upd();
+    }
   }catch(e){}
 })();
 
