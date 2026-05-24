@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galgame 工具与网站导航</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 16px 12px; max-width: 480px; margin: 0 auto; }
+h1 { font-size: 18px; margin-bottom: 16px; color: #f0f6fc; display: flex; align-items: center; }
+.mode-switch { margin-left: auto; font-size: 11px; color: #58a6ff; text-decoration: none; background: #161b22; border: 1px solid #30363d; border-radius: 4px; padding: 4px 10px; white-space: nowrap; }
+.mode-switch:hover { border-color: #58a6ff; }
+.header-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.header-row h1 { margin-bottom: 0; flex: 1; }
+
+.search-box { position: relative; margin-bottom: 20px; display: flex; align-items: center; }
+.search-box input { flex: 1; padding: 14px 40px 14px 14px; font-size: 16px; border: 1px solid #30363d; border-radius: 8px; background: #161b22; color: #c9d1d9; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.search-box input:focus { border-color: #58a6ff; }
+.search-box .hist-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8b949e; font-size: 18px; cursor: pointer; padding: 6px 8px; border-radius: 4px; line-height: 1; transition: color 0.2s, transform 0.2s; }
+.search-box .hist-btn:hover { color: #c9d1d9; }
+.search-box .hist-btn.open { transform: translateY(-50%) rotate(180deg); }
+.hist-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #161b22; border: 1px solid #30363d; border-radius: 0 0 8px 8px; border-top: none; z-index: 10; display: none; max-height: 200px; overflow-y: auto; }
+.hist-dropdown.show { display: block; }
+.hist-dropdown .hist-item { padding: 12px 14px; cursor: pointer; font-size: 14px; color: #c9d1d9; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; align-items: center; }
+.hist-dropdown .hist-item:hover { background: #1c2128; }
+.hist-dropdown .hist-item:last-child { border-bottom: none; }
+.hist-dropdown .hist-item .del-hist { color: #484f58; font-size: 14px; cursor: pointer; padding: 4px 8px; border-radius: 3px; }
+.hist-dropdown .hist-item .del-hist:hover { color: #f85149; background: #2d1518; }
+.hist-dropdown .hist-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #21262d; }
+.hist-dropdown .hist-header span { font-size: 11px; color: #8b949e; }
+.hist-dropdown .hist-header .trash-btn { background: none; border: none; color: #484f58; font-size: 14px; cursor: pointer; padding: 2px 4px; border-radius: 3px; }
+.hist-dropdown .hist-header .trash-btn:hover { color: #f85149; background: #2d1518; }
+.hist-dropdown .hist-empty { padding: 16px; text-align: center; font-size: 13px; color: #484f58; }
+
+.stats { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.stat-card { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 12px 14px; flex: 1; min-width: 80px; }
+.stat-card .num { font-size: 20px; font-weight: 600; color: #f0f6fc; }
+.stat-card .label { font-size: 11px; color: #8b949e; margin-top: 4px; }
+
+.cat-links { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.cat-link { flex: 1; min-width: 70px; background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 12px 8px; text-align: center; text-decoration: none; color: #c9d1d9; transition: border-color 0.2s; }
+.cat-link:hover { border-color: #58a6ff; }
+.cat-link .icon { font-size: 18px; margin-bottom: 4px; }
+.cat-link .name { font-size: 13px; font-weight: 600; }
+.cat-link .count { font-size: 11px; color: #8b949e; margin-top: 2px; }
+
+.quick-pick { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+.quick-pick h3 { font-size: 15px; margin-bottom: 10px; color: #f0f6fc; }
+.quick-pick .hint { color: #8b949e; font-size: 13px; }
+.quick-pick h3 button { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; padding: 3px 10px; font-size: 12px; cursor: pointer; margin-left: 8px; }
+
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #21262d; color: #8b949e; cursor: pointer; transition: opacity 0.2s; }
+.tag:hover { opacity: 0.8; }
+.tag.simulator { background: #1f3a1f; color: #7ee787; }
+.tag.website { background: #1f2a3a; color: #79c0ff; }
+.tag.tool { background: #3a1f2a; color: #ffa198; }
+.tag-label { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #1c2128; color: #8b949e; margin: 1px 2px; cursor: pointer; transition: background 0.2s; }
+.tag-label:hover { background: #30363d; }
+
+/* 表格横向滚动容器 */
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; }
+.result-table { width: 100%; min-width: 620px; border-collapse: collapse; }
+.result-table th { text-align: left; padding: 8px 10px; font-size: 11px; color: #8b949e; font-weight: 600; border-bottom: 1px solid #21262d; white-space: nowrap; }
+.result-table td { padding: 10px 10px; border-bottom: 1px solid #21262d; vertical-align: middle; font-size: 13px; }
+.result-table tr:hover td { background: #1c2128; }
+.result-table .col-name { min-width: 90px; }
+.result-table .col-desc { color: #8b949e; font-size: 12px; }
+.result-table .col-cat { width: 60px; white-space: nowrap; }
+.result-table .col-tags { min-width: 70px; }
+.result-table .col-status { width: 45px; text-align: center; font-size: 14px; }
+.result-table .col-repo { width: 75px; white-space: nowrap; text-align: center; }
+.result-table .col-link { width: 75px; white-space: nowrap; text-align: center; }
+.result-table .col-name span { font-weight: 600; color: #f0f6fc; }
+
+.status-live { color: #3fb950; }
+.status-dead { color: #f85149; }
+.status-unknown { color: #484f58; }
+
+.btn-repo-go, .btn-link-go { display: inline-block; padding: 5px 8px; border-radius: 4px; font-size: 11px; text-decoration: none; font-weight: 500; color: #fff; }
+.btn-repo-go { background: #0366d6; }
+.btn-repo-go:hover { background: #0550b3; }
+.btn-link-go { background: #28a745; }
+.btn-link-go:hover { background: #218838; }
+
+.link-info { font-size: 11px; color: #484f58; margin-top: 12px; line-height: 1.5; }
+.link-info a { color: #58a6ff; }
+.empty { text-align: center; color: #8b949e; padding: 32px 0; font-size: 14px; }
+.home-section { display: block; }
+.searching .home-section { display: none; }
+.loading-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #30363d; border-top: 2px solid #58a6ff; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 6px; vertical-align: middle; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* 搜索结果区域的表格也包裹 */
+#results .result-table { min-width: 620px; }
+</style>
+</head>
+<body>
+<div class="header-row">
+  <h1><svg viewBox="0 0 64 64" style="width:26px;height:26px;vertical-align:middle;margin-right:6px;margin-top:-2px;flex-shrink:0"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#16213e"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#bg)"/><circle cx="32" cy="32" r="23" fill="none" stroke="#30363d" stroke-width="2"/><circle cx="32" cy="32" r="22" fill="none" stroke="#58a6ff" stroke-width="0.8" opacity="0.4"/><g stroke-linecap="round"><line x1="32" y1="10" x2="32" y2="13" stroke="#58a6ff" stroke-width="2"/><line transform="rotate(22.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#7ee787" stroke-width="1.2"/><line transform="rotate(45 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line transform="rotate(67.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line x1="54" y1="32" x2="51" y2="32" stroke="#8b949e" stroke-width="2"/><line transform="rotate(112.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line transform="rotate(135 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line transform="rotate(157.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#7ee787" stroke-width="1.2"/><line x1="32" y1="54" x2="32" y2="51" stroke="#7ee787" stroke-width="2"/><line transform="rotate(202.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#7ee787" stroke-width="1.2"/><line transform="rotate(225 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line transform="rotate(247.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line x1="10" y1="32" x2="13" y2="32" stroke="#8b949e" stroke-width="2"/><line transform="rotate(292.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line transform="rotate(315 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#8b949e" stroke-width="1.2"/><line transform="rotate(337.5 32 32)" x1="32" y1="10" x2="32" y2="12.5" stroke="#7ee787" stroke-width="1.2"/></g><polygon points="32,12 37,32 32,52 27,32" fill="#58a6ff"/><polygon points="32,12 37,32 32,52 27,32" fill="none" stroke="#f0f6fc" stroke-width="0.5" opacity="0.4"/><circle cx="32" cy="32" r="3" fill="#0d1117" stroke="#f0f6fc" stroke-width="1"/></svg>Galgame 导航</h1>
+  <a href="search.html" class="mode-switch">桌面版</a>
+</div>
+
+<div class="search-box">
+  <input type="text" id="search" placeholder="搜索名称、标签或类别..." autofocus>
+  <button class="hist-btn" id="histBtn" onclick="toggleHistory()" title="搜索历史">&#x25BC;</button>
+  <div class="hist-dropdown" id="histDropdown"></div>
+</div>
+
+<div class="home-section">
+  <div class="cat-links" id="catLinks">
+    <a href="https://github.com/argb6/gal-navigation" class="cat-link" target="_blank">
+      <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
+    </a>
+    <a href="#" class="cat-link" id="simulatorLink" onclick="search('模拟器');return false;">
+      <div class="icon">&#x1F4F1;</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
+    </a>
+    <a href="#" class="cat-link" id="websiteLink" onclick="search('网站');return false;">
+      <div class="icon">&#x1F310;</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
+    </a>
+    <a href="#" class="cat-link" id="toolLink" onclick="search('工具');return false;">
+      <div class="icon">&#x1F6E0;</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
+    </a>
+  </div>
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">总条目数</div></div>
+    <div class="stat-card"><div class="num" id="catCount">0</div><div class="label">分类数量</div></div>
+    <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
+  </div>
+  <div class="quick-pick" id="randomPick">
+    <h3>&#x1F3B2; 随机推荐 <button onclick="pickRandom()">&#x1F3B2; 换一个</button></h3>
+    <div id="randomItem"><span class="hint">加载中<span class="loading-spinner"></span></span></div>
+  </div>
+  <div class="quick-pick" id="recentPick">
+    <h3>&#x1F4C5; 最近新增</h3>
+    <div id="recentList"><div class="hint">加载中<span class="loading-spinner"></span></div></div>
+  </div>
+</div>
+
+<div class="results" id="results"></div>
+<div class="link-info" id="linkInfo"></div>
+
+<script>
+(function(){
+  var ua = navigator.userAgent;
+  var isMobile = /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(ua);
+  if (!isMobile) {
+    var current = location.pathname;
+    var desktop = current.replace(/search_mobile\.html$/i, 'search.html');
+    // 如果当前确实在 mobile 页面，跳转到桌面版
+    if (desktop !== current && /search_mobile\.html$/i.test(current)) {
+      location.replace(desktop);
+    }
+  }
+})();
+
+const API="https://api.github.com/repos/argb6/gal-navigation/contents";
+const GITHUB="https://github.com/argb6/gal-navigation/blob/main";
+const TAG={simulator:"模拟器",website:"网站",tool:"工具"};
+const CLS={simulator:"simulator",website:"website",tool:"tool"};
+const DIRS=[{d:"simulators",c:"simulator"},{d:"websites",c:"website"},{d:"tools",c:"tool"}];
+let all=[];
+let linkStatus={};
+let checkedAt="";
+
+function parse(t,c,dir){
+  let r=[],tagRe=/`([^`]+)`/g,cleanRe=/\s*`[^`]+`\s*/g;
+  t.split("\n").forEach(l=>{
+    let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
+    if(m){
+      let n=m[1],u=m[2],raw=m[3];
+      raw=raw.replace(/^[-–—]\s*/,"");
+      let tags=[],d=raw,tm;
+      tagRe.lastIndex=0;
+      while((tm=tagRe.exec(raw))!==null)tags.push(tm[1]);
+      if(tags.length)d=raw.replace(cleanRe," ").trim();
+      if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
+      let gh=GITHUB+"/"+dir+m[2];
+      r.push({n,d,c,u,gh,tags});
+    }
+  });
+  return r;
+}
+
+function statusText(url){
+  let s=linkStatus[url];
+  if(s===undefined)return'<span class="status-unknown" title="未检测">?</span>';
+  if(200<=s&&s<400)return'<span class="status-live" title="正常 HTTP '+s+'">&#x2713;</span>';
+  return'<span class="status-dead" title="失效 HTTP '+s+'">&#x2717;</span>';
+}
+
+function wrapTable(innerHTML){
+  return '<div class="table-wrap"><table class="result-table">'+innerHTML+'</table></div>';
+}
+
+function pickRandom(){
+  if(!all.length)return;
+  let r=all[Math.floor(Math.random()*all.length)];
+  let row='<tr>'+
+    '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
+    '<td class="col-desc">'+r.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+TAG[r.c]+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
+    '<td class="col-status">'+statusText(r.u)+'</td>'+
+    '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>';
+  document.getElementById("randomItem").innerHTML=wrapTable('<thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+row+'</tbody>');
+}
+
+function showRecent(){
+  if(!all.length)return;
+  let rc=[...all].slice(-3).reverse();
+  let rows=rc.map(r=>'<tr>'+
+    '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
+    '<td class="col-desc">'+r.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+TAG[r.c]+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
+    '<td class="col-status">'+statusText(r.u)+'</td>'+
+    '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>').join("");
+  document.getElementById("recentList").innerHTML=wrapTable('<thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody>');
+}
+
+function upd(){
+  let c={simulator:0,website:0,tool:0};all.forEach(x=>c[x.c]++);
+  document.getElementById("totalCount").textContent=all.length;
+  document.getElementById("catCount").textContent=new Set(all.map(x=>x.c)).size;
+  document.getElementById("simulatorCount").textContent=c.simulator;
+  document.getElementById("websiteCount").textContent=c.website;
+  document.getElementById("toolCount").textContent=c.tool;
+  if(all.length){pickRandom();showRecent();}
+}
+
+function refreshAllStatus(){
+  ['randomItem','recentList','results'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    var table=el.querySelector("table");
+    if(!table)return;
+    table.querySelectorAll("tbody tr").forEach(function(tr){
+      var nameSpan=tr.querySelector(".col-name span");
+      if(!nameSpan)return;
+      var name=nameSpan.textContent;
+      var item=all.find(function(x){return x.n===name;});
+      if(item) tr.querySelector(".col-status").innerHTML=statusText(item.u);
+    });
+  });
+}
+
+let _searchStatePushed=false;
+
+function search(q){
+  document.getElementById("search").value=q||"";
+  if(!q){
+    document.body.classList.remove("searching");
+    document.getElementById("results").innerHTML="";
+    _searchStatePushed=false;
+    return;
+  }
+  document.body.classList.add("searching");
+  saveHistory(q);
+  if(!_searchStatePushed){
+    history.pushState({searching:true},"","#search");
+    _searchStatePushed=true;
+  }else{
+    history.replaceState({searching:true},"","#search");
+  }
+  q=q.toLowerCase();
+  let m=all.filter(function(x){
+    return x.n.toLowerCase().includes(q) ||
+    TAG[x.c].includes(q) ||
+    (x.tags||[]).some(function(t){return t.toLowerCase().includes(q);});
+  });
+  let el=document.getElementById("results");
+  if(!m.length){el.innerHTML='<div class="empty">没有找到匹配的结果</div>';return;}
+  let rows=m.map(function(i){
+    return '<tr>'+
+    '<td class="col-name"><span title="'+i.n+'">'+i.n+'</span></td>'+
+    '<td class="col-desc">'+i.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[i.c]+'" onclick="search(\''+TAG[i.c]+'\')" title="点击搜索此类别">'+TAG[i.c]+'</span></td>'+
+    '<td class="col-tags">'+(i.tags&&i.tags.length?i.tags.map(function(t){return '<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>';}).join(""):'<span class="tag-label">-</span>')+'</td>'+
+    '<td class="col-status">'+statusText(i.u)+'</td>'+
+    '<td class="col-repo"><a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(i.c==="website"?'<a href="'+i.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>';
+  }).join("");
+  el.innerHTML=wrapTable('<thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody>');
+}
+
+const HIST_KEY = "gal_search_history";
+const MAX_HIST = 10;
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch(e) { return []; }
+}
+
+function saveHistory(q) {
+  let h = getHistory();
+  h = h.filter(function(x){return x !== q;});
+  h.unshift(q);
+  if (h.length > MAX_HIST) h = h.slice(0, MAX_HIST);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+}
+
+function renderHistory() {
+  let h = getHistory();
+  let dd = document.getElementById("histDropdown");
+  if (!h.length) {
+    dd.innerHTML = '<div class="hist-empty">暂无搜索历史</div>';
+    return;
+  }
+  dd.innerHTML =
+    '<div class="hist-header"><span>搜索历史（' + h.length + '）</span><button class="trash-btn" title="清空所有历史" onclick="clearHistory()">&#x1F5D1;</button></div>' +
+    h.map(function(q){
+      return '<div class="hist-item" onclick="search(\'' + q.replace(/'/g, "\\'") + '\');closeHistory()">' +
+      '<span>' + q + '</span>' +
+      '<span class="del-hist" onclick="event.stopPropagation();deleteHistoryItem(\'' + q.replace(/'/g, "\\'") + '\')">&#x2715;</span>' +
+      '</div>';
+    }).join("");
+}
+
+function toggleHistory() {
+  let dd = document.getElementById("histDropdown");
+  let btn = document.getElementById("histBtn");
+  let isOpen = dd.classList.contains("show");
+  if (isOpen) {
+    closeHistory();
+  } else {
+    renderHistory();
+    dd.classList.add("show");
+    btn.classList.add("open");
+  }
+}
+
+function closeHistory() {
+  document.getElementById("histDropdown").classList.remove("show");
+  document.getElementById("histBtn").classList.remove("open");
+}
+
+function deleteHistoryItem(q) {
+  let h = getHistory().filter(function(x){return x !== q;});
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+  renderHistory();
+}
+
+function clearHistory() {
+  localStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+document.addEventListener("click", function(e) {
+  let box = document.querySelector(".search-box");
+  if (box && !box.contains(e.target)) closeHistory();
+});
+
+(async function(){
+  let ok=0;
+  await Promise.all(DIRS.map(async function({d,c}){
+    try{
+      let r=await fetch(API+"/"+d+"/README.md");if(!r.ok)return;
+      let f=await r.json();
+      let t=await (await fetch(f.download_url)).text();
+      all=all.concat(parse(t,c,d+"/"));
+      ok++;
+    }catch(e){}
+  }));
+
+  upd();
+
+  if(ok===0){
+    document.getElementById("randomItem").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
+    document.getElementById("recentList").innerHTML='<span class="hint">加载失败，<a href="javascript:location.reload()" style="color:#58a6ff">点击重试</a></span>';
+    return;
+  }
+
+  try{
+    let r=await fetch("https://api.github.com/repos/argb6/gal-navigation");
+    if(r.ok){let j=await r.json();document.getElementById("updated").textContent=new Date(j.pushed_at).toLocaleDateString("zh-CN");}
+  }catch(e){}
+
+  try{
+    let r=await fetch("link-status.json?t="+Date.now());
+    if(r.ok){
+      let j=await r.json();
+      linkStatus=j.status||{};
+      checkedAt=j.checked_at||"";
+      let d=Object.values(linkStatus).filter(function(s){return s>=400||s===-1;}).length;
+      document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
+      refreshAllStatus();
+    }
+  }catch(e){}
+})();
+
+document.getElementById("search").addEventListener("keydown",function(e){if(e.key==="Enter")search(e.target.value.trim().toLowerCase());});
+
+window.addEventListener("popstate",function(e){
+  if(_searchStatePushed) search("");
+});
+
+if(location.hash==="#search")history.replaceState(null,"",location.pathname);
+</script>
+</body>
+</html>
