@@ -99,7 +99,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
     <div class="item" id="randomItem">暂无条目</div>
   </div>
   <div class="quick-pick" id="recentPick">
-    <h3>&#x1F4C5; 最近新增 <button onclick="showRecent()" style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;margin-left:8px;">&#x1F504; 换一批</button></h3>
+    <h3>&#x1F4C5; 最近新增</h3>
     <div id="recentList"><div class="hint">暂无条目</div></div>
   </div>
 </div>
@@ -162,8 +162,17 @@ function pickRandom(){
 }
 function showRecent(){
   if(!all.length)return;
-  let rc=[...all].sort(()=>Math.random()-0.5).slice(0,3);
-  document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span></div>').join("");
+  let rc=[...all].slice(-3).reverse();
+  let rows=rc.map(r=>'<tr>'+
+    '<td class="col-name"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a></td>'+
+    '<td class="col-desc">'+r.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+tagsHtml(r.tags)+'</td>'+
+    '<td class="col-status">'+statusText(r.u)+'</td>'+
+    '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>').join("");
+  document.getElementById("recentList").innerHTML='<table class="result-table" style="margin-top:0"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 function upd(){
   let c={simulator:0,website:0,tool:0};all.forEach(x=>c[x.c]++);
@@ -181,11 +190,7 @@ function upd(){
     document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
   }
 
-  let rc=[...all].slice(-3).reverse();
-  if(rc.length){
-    document.getElementById("recentList").innerHTML=rc.map(r=>'<div class="item"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span></div>').join("");
-  }
-  if(all.length){pickRandom();}
+  if(all.length){pickRandom();showRecent();}
 
   if(checkedAt){
     let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
