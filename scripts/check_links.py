@@ -33,7 +33,7 @@ def check_url(entry):
             resp = client.head(url, headers={"User-Agent": "LinkChecker/1.0"})
             code = resp.status_code
     except Exception as e:
-        code = str(e)[:60]
+        code = -1
     return {"name": entry["name"], "url": url, "cat": entry["cat"], "desc": entry["desc"], "status": code}
 
 def main():
@@ -45,49 +45,46 @@ def main():
     print(f"共发现 {total} 个链接，开始检查...")
 
     ok, dead, error = [], [], []
+    url_status = {}
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
         futures = {pool.submit(check_url, e): e for e in all_links}
         for i, f in enumerate(as_completed(futures), 1):
             r = f.result()
             s = r["status"]
-            if s == 200:
+            url_status[r["url"]] = s
+            if 200 <= s < 400:
                 ok.append(r)
-            elif isinstance(s, int) and 300 <= s < 400:
-                ok.append(r)  # 重定向也算可用
-            elif isinstance(s, int) and s >= 400:
+            elif s >= 400:
                 dead.append(r)
-            else:
+            elif s == -1:
                 error.append(r)
             print(f"[{i}/{total}] {r['name']} -> {s}")
 
     print(f"\n{'='*60}")
-    print(f"结果汇总: 正常 {len(ok)} | 失效 {len(dead)} | 错误 {len(error)}")
+    print(f"正常 {len(ok)} | 失效 {len(dead)} | 错误 {len(error)}")
 
     if dead:
         print(f"\n--- 失效链接 ({len(dead)} 个) ---")
         for r in dead:
-            print(f"  [{r['cat']}] {r['name']} | {r['status']} | {r['url']}")
+            print(f"  [{r['cat']}] {r['name']} | HTTP {r['status']} | {r['url']}")
 
-    if error:
-        print(f"\n--- 检查异常 ({len(error)} 个) ---")
-        for r in error:
-            print(f"  [{r['cat']}] {r['name']} | {r['status']} | {r['url']}")
-
-    # 写入 JSON 报告
+    # 精简 JSON：只存 url -> status，方便前端读取
     report = {
-        "checked_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "checked_at": time.strftime("%Y-%m-%d %H:%M UTC"),
         "total": total,
-        "ok": len(ok),
+        "alive": len(ok),
         "dead": len(dead),
         "error": len(error),
-        "dead_links": [{"name": r["name"], "url": r["url"], "category": r["cat"], "status": r["status"]} for r in dead],
-        "error_links": [{"name": r["name"], "url": r["url"], "category": r["cat"], "error": r["status"]} for r in error],
+        "status": url_status
     }
-    with open("link-check-report.json", "w", encoding="utf-8") as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
+
+    import os
+    os.makedirs("docs", exist_ok=True)
+    with open("docs/link-status.json", "w", encoding="utf-8") as f:
+        json.dump(report, f, ensure_ascii=False)
 
     if dead:
-        sys.exit(1)  # 有失效链接时标记失败，方便在 Actions 中看到红色警告
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
