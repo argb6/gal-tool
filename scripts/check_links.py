@@ -11,7 +11,7 @@ def extract_links(filepath):
     links = []
     try:
         with open(filepath, encoding="utf-8") as f:
-            for line in f:
+            for lineno, line in enumerate(f, 1):
                 m = re.match(r'^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)', line)
                 if not m:
                     continue
@@ -21,7 +21,7 @@ def extract_links(filepath):
                 elif not url.startswith("http"):
                     url = GITHUB_BASE + "/" + filepath.rsplit("/", 1)[0] + "/" + url
                 cat = filepath.split("/")[0]
-                links.append({"name": name, "url": url, "cat": cat, "desc": desc})
+                links.append({"name": name, "url": url, "cat": cat, "desc": desc, "file": filepath, "line": lineno})
     except Exception as e:
         print(f"读取 {filepath} 失败: {e}", file=sys.stderr)
     return links
@@ -34,7 +34,7 @@ def check_url(entry):
             code = resp.status_code
     except Exception:
         code = -1
-    return {"name": entry["name"], "url": url, "cat": entry["cat"], "desc": entry["desc"], "status": code}
+    return entry, code
 
 def main():
     all_links = []
@@ -49,26 +49,27 @@ def main():
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
         futures = {pool.submit(check_url, e): e for e in all_links}
         for i, f in enumerate(as_completed(futures), 1):
-            r = f.result()
-            s = r["status"]
-            url_status[r["url"]] = s
+            e, s = f.result()
+            url_status[e["url"]] = s
             if 200 <= s < 400:
-                ok.append(r)
+                ok.append(e)
             elif s >= 400:
-                dead.append(r)
+                dead.append(e)
             else:
-                error.append(r)
-            print(f"[{i}/{total}] {r['name']} -> {s}")
+                error.append(e)
+            print(f"[{i}/{total}] {e['name']} -> {s}")
 
     print(f"\n{'='*60}")
     print(f"正常 {len(ok)} | 失效 {len(dead)} | 异常 {len(error)}")
 
+    # 输出 GitHub 注解，邮件中直接可见
     if dead or error:
-        for r in dead:
-            print(f"  ❌ [{r['cat']}] {r['name']} | HTTP {r['status']} | {r['url']}")
-        for r in error:
-            print(f"  ⚠️ [{r['cat']}] {r['name']} | 无法连接 | {r['url']}")
+        for e in dead:
+            print(f"::error file={e['file']},line={e['line']}::[{e['cat']}] {e['name']} 失效 HTTP {e['status']} {e['url']}")
+        for e in error:
+            print(f"::error file={e['file']},line={e['line']}::[{e['cat']}] {e['name']} 无法连接 {e['url']}")
 
+    # 保存报告
     report = {
         "checked_at": time.strftime("%Y-%m-%d %H:%M UTC"),
         "total": total,
@@ -82,18 +83,24 @@ def main():
         json.dump(report, f, ensure_ascii=False)
 
     if dead or error:
-        body = f"## 链接检查报告\n\n**检查时间**：{report['checked_at']}\n\n**总计** {total} 个链接，{len(ok)} 正常\n\n"
+        dead_names = ", ".join([e["name"] for e in dead + error])
+        body = f"## 以下链接已失效\n\n**检查时间**：{report['checked_at']}\n\n"
         if dead:
-            body += f"### ❌ 失效链接（{len(dead)} 个）\n\n"
-            for r in dead:
-                body += f"- [{r['cat']}] [{r['name']}]({r['url']}) — HTTP {r['status']}\n"
+            body += "### ❌ HTTP 失效\n\n"
+            for e in dead:
+                body += f"- [{e['cat']}] [{e['name']}]({e['url']}) — HTTP {e['status']}\n"
             body += "\n"
         if error:
-            body += f"### ⚠️ 无法连接（{len(error)} 个）\n\n"
-            for r in error:
-                body += f"- [{r['cat']}] [{r['name']}]({r['url']}) — 连接失败\n"
+            body += "### ⚠️ 无法连接\n\n"
+            for e in error:
+                body += f"- [{e['cat']}] [{e['name']}]({e['url']}) — 连接失败\n"
         with open("issue_body.txt", "w", encoding="utf-8") as f:
             f.write(body)
+
+        # 把失效链接名写入单独文件，供 workflow 拼进 issue 标题
+        with open("dead_names.txt", "w", encoding="utf-8") as f:
+            f.write(dead_names)
+
         sys.exit(1)
 
 if __name__ == "__main__":
