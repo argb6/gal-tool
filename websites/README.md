@@ -13,3 +13,5 @@
 ## 百科资源
 
 > 资料数据库、攻略百科、作品信息查询等
+- [测试-活链接](https://www.baidu.com) - 百度首页，肯定能打开
+- [测试-死链接](https://this-domain-definitely-does-not-exist-12345.com) - 不存在的域名，肯定打不开
