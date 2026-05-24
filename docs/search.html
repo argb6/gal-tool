@@ -158,7 +158,16 @@ function makeBtns(i){
 function pickRandom(){
   if(!all.length)return;
   let r=all[Math.floor(Math.random()*all.length)];
-  document.getElementById("randomItem").innerHTML='<a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a>'+statusText(r.u)+'<span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span>'+tagsHtml(r.tags)+makeBtns(r)+'<span class="desc">'+r.d+'</span>';
+  let row='<tr>'+
+    '<td class="col-name"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a></td>'+
+    '<td class="col-desc">'+r.d+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+tagsHtml(r.tags)+'</td>'+
+    '<td class="col-status">'+statusText(r.u)+'</td>'+
+    '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
+    '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
+    '</tr>';
+  document.getElementById("randomItem").innerHTML='<table class="result-table" style="margin-top:0"><thead><tr><th>名称</th><th>描述</th><th>类别</th><th>标签</th><th>状态</th><th>仓库直达</th><th>链接直达</th></tr></thead><tbody>'+row+'</tbody></table>';
 }
 function showRecent(){
   if(!all.length)return;
