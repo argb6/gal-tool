@@ -2,7 +2,13 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" id="vp">
+<script>
+// 检测手机浏览器，强制使用 PC 端视口避免表格错位
+if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+  document.getElementById("vp").setAttribute("content","width=960, initial-scale=1.0");
+}
+</script>
 <title>Galgame 工具与网站导航</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
