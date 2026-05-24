@@ -76,13 +76,13 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
     <a href="https://github.com/argb6/gal-navigation" class="cat-link" target="_blank">
       <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
     </a>
-    <a href="#" class="cat-link" id="simulatorLink" onclick="search('simulator');return false;">
+    <a href="#" class="cat-link" id="simulatorLink" onclick="search('模拟器');return false;">
       <div class="icon">&#x1F4F1;</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
     </a>
-    <a href="#" class="cat-link" id="websiteLink" onclick="search('website');return false;">
+    <a href="#" class="cat-link" id="websiteLink" onclick="search('网站');return false;">
       <div class="icon">&#x1F310;</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
     </a>
-    <a href="#" class="cat-link" id="toolLink" onclick="search('tool');return false;">
+    <a href="#" class="cat-link" id="toolLink" onclick="search('工具');return false;">
       <div class="icon">&#x1F6E0;</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
     </a>
   </div>
@@ -152,7 +152,7 @@ function pickRandom(){
   let row='<tr>'+
     '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
     '<td class="col-desc">'+r.d+'</td>'+
-    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+r.c+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+TAG[r.c]+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
     '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
     '<td class="col-status">'+statusText(r.u)+'</td>'+
     '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
@@ -166,7 +166,7 @@ function showRecent(){
   let rows=rc.map(r=>'<tr>'+
     '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
     '<td class="col-desc">'+r.d+'</td>'+
-    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+r.c+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+TAG[r.c]+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
     '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
     '<td class="col-status">'+statusText(r.u)+'</td>'+
     '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
@@ -245,7 +245,7 @@ function search(q){
     '<tr>'+
     '<td class="col-name"><span title="'+i.n+'">'+i.n+'</span></td>'+
     '<td class="col-desc">'+i.d+'</td>'+
-    '<td class="col-cat"><span class="tag '+CLS[i.c]+'" onclick="search(\''+i.c+'\')" title="点击搜索此类别">'+TAG[i.c]+'</span></td>'+
+    '<td class="col-cat"><span class="tag '+CLS[i.c]+'" onclick="search(\''+TAG[i.c]+'\')" title="点击搜索此类别">'+TAG[i.c]+'</span></td>'+
     '<td class="col-tags">'+(i.tags&&i.tags.length?i.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
     '<td class="col-status">'+statusText(i.u)+'</td>'+
     '<td class="col-repo"><a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
