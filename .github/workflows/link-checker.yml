@@ -2,7 +2,7 @@ name: 网站链接检查
 
 on:
   schedule:
-    - cron: '0 8 * * *'   # 每天 UTC 8:00
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
@@ -28,3 +28,18 @@ jobs:
           git add docs/link-status.json
           git diff --staged --quiet || git commit -m "自动更新链接检查报告"
           git push
+
+      - name: 创建 Issue（有失效链接时）
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('issue_body.txt', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '链接检查：发现失效链接',
+              body: body,
+              labels: ['link-check']
+            });
