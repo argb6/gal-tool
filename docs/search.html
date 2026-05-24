@@ -24,11 +24,13 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .cat-link .icon { font-size: 20px; margin-bottom: 8px; }
 .cat-link .name { font-size: 14px; font-weight: 600; }
 .cat-link .count { font-size: 11px; color: #8b949e; margin-top: 4px; }
-.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #21262d; color: #8b949e; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #21262d; color: #8b949e; cursor: pointer; transition: opacity 0.2s; }
+.tag:hover { opacity: 0.8; }
 .tag.simulator { background: #1f3a1f; color: #7ee787; }
 .tag.website { background: #1f2a3a; color: #79c0ff; }
 .tag.tool { background: #3a1f2a; color: #ffa198; }
-.tag-label { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #1c2128; color: #8b949e; margin: 1px 2px; }
+.tag-label { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #1c2128; color: #8b949e; margin: 1px 2px; cursor: pointer; transition: background 0.2s; }
+.tag-label:hover { background: #30363d; }
 
 /* result table */
 .result-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
@@ -42,8 +44,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .result-table .col-status { width: 55px; text-align: center; font-size: 16px; }
 .result-table .col-repo { width: 85px; white-space: nowrap; text-align: center; }
 .result-table .col-link { width: 85px; white-space: nowrap; text-align: center; }
-.result-table .name-link { color: #58a6ff; text-decoration: none; font-weight: 600; }
-.result-table .name-link:hover { text-decoration: underline; }
+.result-table .col-name span { font-weight: 600; color: #f0f6fc; }
 
 /* status text */
 .status-live { color: #3fb950; }
@@ -75,13 +76,13 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
     <a href="https://github.com/argb6/gal-navigation" class="cat-link" target="_blank">
       <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
     </a>
-    <a href="#" class="cat-link" id="simulatorLink">
+    <a href="#" class="cat-link" id="simulatorLink" onclick="search('simulator');return false;">
       <div class="icon">&#x1F4F1;</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
     </a>
-    <a href="#" class="cat-link" id="websiteLink">
+    <a href="#" class="cat-link" id="websiteLink" onclick="search('website');return false;">
       <div class="icon">&#x1F310;</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
     </a>
-    <a href="#" class="cat-link" id="toolLink">
+    <a href="#" class="cat-link" id="toolLink" onclick="search('tool');return false;">
       <div class="icon">&#x1F6E0;</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
     </a>
   </div>
@@ -149,10 +150,10 @@ function pickRandom(){
   if(!all.length)return;
   let r=all[Math.floor(Math.random()*all.length)];
   let row='<tr>'+
-    '<td class="col-name"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a></td>'+
+    '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
     '<td class="col-desc">'+r.d+'</td>'+
-    '<td class="col-cat"><span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></td>'+
-    '<td class="col-tags">'+tagsHtml(r.tags)+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+r.c+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
     '<td class="col-status">'+statusText(r.u)+'</td>'+
     '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
     '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
@@ -163,10 +164,10 @@ function showRecent(){
   if(!all.length)return;
   let rc=[...all].slice(-3).reverse();
   let rows=rc.map(r=>'<tr>'+
-    '<td class="col-name"><a href="'+r.u+'" target="_blank" class="name-link">'+r.n+'</a></td>'+
+    '<td class="col-name"><span title="'+r.n+'">'+r.n+'</span></td>'+
     '<td class="col-desc">'+r.d+'</td>'+
-    '<td class="col-cat"><span class="tag '+CLS[r.c]+'">'+TAG[r.c]+'</span></td>'+
-    '<td class="col-tags">'+tagsHtml(r.tags)+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[r.c]+'" onclick="search(\''+r.c+'\')" title="点击搜索此类别">'+TAG[r.c]+'</span></td>'+
+    '<td class="col-tags">'+(r.tags&&r.tags.length?r.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
     '<td class="col-status">'+statusText(r.u)+'</td>'+
     '<td class="col-repo"><a href="'+r.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
     '<td class="col-link">'+(r.c==="website"?'<a href="'+r.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
@@ -180,9 +181,6 @@ function upd(){
   document.getElementById("simulatorCount").textContent=c.simulator;
   document.getElementById("websiteCount").textContent=c.website;
   document.getElementById("toolCount").textContent=c.tool;
-  document.getElementById("simulatorLink").href=GITHUB+"/simulators/README.md";
-  document.getElementById("websiteLink").href=GITHUB+"/websites/README.md";
-  document.getElementById("toolLink").href=GITHUB+"/tools/README.md";
 
   if(all.length){pickRandom();showRecent();}
 }
@@ -193,19 +191,25 @@ function refreshAllStatus(){
   if(randomTable){
     let row=randomTable.querySelector("tbody tr");
     if(row){
-      let nameLink=row.querySelector(".name-link");
-      let url=nameLink.href;
-      row.querySelector(".col-status").innerHTML=statusText(url);
+      // 从当前行的数据中获取 URL
+      let idx=all.findIndex(x=>x.n===row.querySelector(".col-name span").textContent);
+      if(idx>=0){
+        let url=all[idx].u;
+        row.querySelector(".col-status").innerHTML=statusText(url);
+      }
     }
   }
   // 更新最近新增表格中的状态
   let recentTable=document.getElementById("recentList").querySelector("table");
   if(recentTable){
     recentTable.querySelectorAll("tbody tr").forEach(tr=>{
-      let nameLink=tr.querySelector(".name-link");
-      if(nameLink){
-        let url=nameLink.href;
-        tr.querySelector(".col-status").innerHTML=statusText(url);
+      let nameSpan=tr.querySelector(".col-name span");
+      if(nameSpan){
+        let name=nameSpan.textContent;
+        let item=all.find(x=>x.n===name);
+        if(item){
+          tr.querySelector(".col-status").innerHTML=statusText(item.u);
+        }
       }
     });
   }
@@ -213,16 +217,20 @@ function refreshAllStatus(){
   let resultTable=document.getElementById("results").querySelector("table");
   if(resultTable){
     resultTable.querySelectorAll("tbody tr").forEach(tr=>{
-      let nameLink=tr.querySelector(".name-link");
-      if(nameLink){
-        let url=nameLink.href;
-        tr.querySelector(".col-status").innerHTML=statusText(url);
+      let nameSpan=tr.querySelector(".col-name span");
+      if(nameSpan){
+        let name=nameSpan.textContent;
+        let item=all.find(x=>x.n===name);
+        if(item){
+          tr.querySelector(".col-status").innerHTML=statusText(item.u);
+        }
       }
     });
   }
 }
 
 function search(q){
+  document.getElementById("search").value=q||"";
   if(!q){document.body.classList.remove("searching");document.getElementById("results").innerHTML="";return;}
   document.body.classList.add("searching");
   q=q.toLowerCase();
@@ -235,10 +243,10 @@ function search(q){
   if(!m.length){el.innerHTML='<div class="empty">没有找到匹配的结果</div>';return;}
   let rows=m.map(i=>
     '<tr>'+
-    '<td class="col-name"><a href="'+i.u+'" target="_blank" class="name-link">'+i.n+'</a></td>'+
+    '<td class="col-name"><span title="'+i.n+'">'+i.n+'</span></td>'+
     '<td class="col-desc">'+i.d+'</td>'+
-    '<td class="col-cat"><span class="tag '+CLS[i.c]+'">'+TAG[i.c]+'</span></td>'+
-    '<td class="col-tags">'+tagsHtml(i.tags)+'</td>'+
+    '<td class="col-cat"><span class="tag '+CLS[i.c]+'" onclick="search(\''+i.c+'\')" title="点击搜索此类别">'+TAG[i.c]+'</span></td>'+
+    '<td class="col-tags">'+(i.tags&&i.tags.length?i.tags.map(t=>'<span class="tag-label" onclick="search(\''+t+'\')" title="点击搜索此标签">'+t+'</span>').join(""):'<span class="tag-label">-</span>')+'</td>'+
     '<td class="col-status">'+statusText(i.u)+'</td>'+
     '<td class="col-repo"><a href="'+i.gh+'" target="_blank" class="btn-repo-go">仓库直达</a></td>'+
     '<td class="col-link">'+(i.c==="website"?'<a href="'+i.u+'" target="_blank" class="btn-link-go">链接直达</a>':'')+'</td>'+
