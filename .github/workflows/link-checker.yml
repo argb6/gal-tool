@@ -2,8 +2,8 @@ name: 网站链接检查
 
 on:
   schedule:
-    - cron: '0 8 * * 1'  # 每周一早上 8:00 UTC
-  workflow_dispatch:      # 手动触发
+    - cron: '0 8 * * *'   # 每天 UTC 8:00
+  workflow_dispatch:
 
 jobs:
   check-links:
@@ -20,3 +20,11 @@ jobs:
 
       - name: 运行链接检查
         run: python scripts/check_links.py
+
+      - name: 提交检查报告
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/link-status.json
+          git diff --staged --quiet || git commit -m "自动更新链接检查报告"
+          git push
