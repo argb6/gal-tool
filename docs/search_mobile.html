@@ -141,18 +141,6 @@ h1 { font-size: 18px; margin-bottom: 16px; color: #f0f6fc; display: flex; align-
 <div class="link-info" id="linkInfo"></div>
 
 <script>
-(function(){
-  var ua = navigator.userAgent;
-  var isMobile = /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(ua);
-  if (!isMobile) {
-    var current = location.pathname;
-    var desktop = current.replace(/search_mobile\.html$/i, 'search.html');
-    // 如果当前确实在 mobile 页面，跳转到桌面版
-    if (desktop !== current && /search_mobile\.html$/i.test(current)) {
-      location.replace(desktop);
-    }
-  }
-})();
 
 const API="https://api.github.com/repos/argb6/gal-navigation/contents";
 const GITHUB="https://github.com/argb6/gal-navigation/blob/main";
