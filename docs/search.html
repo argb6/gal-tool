@@ -311,10 +311,8 @@ document.getElementById("search").addEventListener("input",e=>search(e.target.va
 
 // 浏览器返回按钮/手机返回键：退出搜索回到首页
 window.addEventListener("popstate",e=>{
-  if(e.state&&e.state.searching){
-    // 用户按了返回，从搜索结果回到首页
+  if(_searchStatePushed){
     search("");
-    history.replaceState(null,"",location.pathname);
   }
 });
 
