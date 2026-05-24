@@ -17,10 +17,6 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .stat-card .label { font-size: 12px; color: #8b949e; margin-top: 4px; }
 .quick-pick { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
 .quick-pick h3 { font-size: 16px; margin-bottom: 12px; color: #f0f6fc; }
-.quick-pick .item { margin-bottom: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-.quick-pick .item a.name-link { color: #58a6ff; text-decoration: none; font-weight: 600; }
-.quick-pick .item a.name-link:hover { text-decoration: underline; }
-.quick-pick .desc { font-size: 12px; color: #8b949e; }
 .quick-pick .hint { color: #8b949e; font-size: 13px; }
 .cat-links { display: flex; gap: 12px; margin-bottom: 24px; }
 .cat-link { flex: 1; background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px; text-align: center; text-decoration: none; color: #c9d1d9; transition: border-color 0.2s; }
@@ -118,17 +114,17 @@ let linkStatus={};
 let checkedAt="";
 
 function parse(t,c,dir){
-  let r=[];
+  let r=[],tagRe=/`([^`]+)`/g,cleanRe=/\s*`[^`]+`\s*/g;
   t.split("\n").forEach(l=>{
     let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
     if(m){
       let n=m[1],u=m[2],raw=m[3];
       raw=raw.replace(/^[-–—]\s*/,"");
       // extract tags
-      let tags=[],d=raw;
-      let tm,re=/`([^`]+)`/g;
-      while((tm=re.exec(raw))!==null)tags.push(tm[1]);
-      if(tags.length)d=raw.replace(/\s*`[^`]+`\s*/g," ").trim();
+      let tags=[],d=raw,tm;
+      tagRe.lastIndex=0;
+      while((tm=tagRe.exec(raw))!==null)tags.push(tm[1]);
+      if(tags.length)d=raw.replace(cleanRe," ").trim();
       if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
       let gh=GITHUB+"/"+dir+m[2];
       r.push({n,d,c,u,gh,tags});
@@ -191,6 +187,41 @@ function upd(){
   if(all.length){pickRandom();showRecent();}
 }
 
+function refreshAllStatus(){
+  // 更新随机推荐表格中的状态
+  let randomTable=document.getElementById("randomItem").querySelector("table");
+  if(randomTable){
+    let row=randomTable.querySelector("tbody tr");
+    if(row){
+      let nameLink=row.querySelector(".name-link");
+      let url=nameLink.href;
+      row.querySelector(".col-status").innerHTML=statusText(url);
+    }
+  }
+  // 更新最近新增表格中的状态
+  let recentTable=document.getElementById("recentList").querySelector("table");
+  if(recentTable){
+    recentTable.querySelectorAll("tbody tr").forEach(tr=>{
+      let nameLink=tr.querySelector(".name-link");
+      if(nameLink){
+        let url=nameLink.href;
+        tr.querySelector(".col-status").innerHTML=statusText(url);
+      }
+    });
+  }
+  // 更新搜索结果表格中的状态
+  let resultTable=document.getElementById("results").querySelector("table");
+  if(resultTable){
+    resultTable.querySelectorAll("tbody tr").forEach(tr=>{
+      let nameLink=tr.querySelector(".name-link");
+      if(nameLink){
+        let url=nameLink.href;
+        tr.querySelector(".col-status").innerHTML=statusText(url);
+      }
+    });
+  }
+}
+
 function search(q){
   if(!q){document.body.classList.remove("searching");document.getElementById("results").innerHTML="";return;}
   document.body.classList.add("searching");
@@ -249,7 +280,7 @@ function search(q){
       checkedAt=j.checked_at||"";
       let d=Object.values(linkStatus).filter(s=>s>=400||s===-1).length;
       document.getElementById("linkInfo").innerHTML='链接状态于 '+checkedAt+' 检查，'+(d?'<span style="color:#f85149">'+d+' 个可能失效</span>':'<span style="color:#3fb950">全部正常</span>')+' | <a href="https://github.com/argb6/gal-navigation/actions/workflows/link-checker.yml" target="_blank">手动复查</a>';
-      if(all.length){pickRandom();showRecent();}
+      refreshAllStatus();
     }
   }catch(e){}
 })();
