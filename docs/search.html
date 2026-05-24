@@ -73,16 +73,16 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 <div class="home-section">
   <div class="cat-links" id="catLinks">
     <a href="https://github.com/argb6/gal-tool" class="cat-link" target="_blank">
-      <div class="icon">&#x1F3E0;</div><div class="name">总仓库</div><div class="count">GitHub</div>
+      <div class="icon">🏠</div><div class="name">总仓库</div><div class="count">GitHub</div>
     </a>
     <a href="#" class="cat-link" id="simulatorLink">
-      <div class="icon">&#x1F4F1;</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
+      <div class="icon">📱</div><div class="name">模拟器</div><div class="count" id="simulatorCount">0</div>
     </a>
     <a href="#" class="cat-link" id="websiteLink">
-      <div class="icon">&#x1F310;</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
+      <div class="icon">🌐</div><div class="name">网站</div><div class="count" id="websiteCount">0</div>
     </a>
     <a href="#" class="cat-link" id="toolLink">
-      <div class="icon">&#x1F6E0;</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
+      <div class="icon">🛠️</div><div class="name">工具</div><div class="count" id="toolCount">0</div>
     </a>
   </div>
   <div class="stats">
@@ -91,11 +91,11 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
     <div class="stat-card"><div class="num" id="updated">-</div><div class="label">最近更新</div></div>
   </div>
   <div class="quick-pick" id="randomPick">
-    <h3>&#x1F3B2; 网站随机推荐</h3>
+    <h3>🎲 网站随机推荐</h3>
     <div class="item" id="randomItem">暂无条目</div>
   </div>
   <div class="quick-pick" id="recentPick">
-    <h3>&#x1F4C5; 最近新增</h3>
+    <h3>📅 最近新增</h3>
     <div id="recentList"><div class="hint">暂无条目</div></div>
   </div>
 </div>
@@ -115,9 +115,9 @@ let checkedAt="";
 
 function parse(t,c,dir){
   let r=[];
-  t.split("\\n").forEach(l=>{
+  t.split("\n").forEach(l=>{
     let m=l.match(/^\s*-\s*\[(.+?)\]\((.+?)\)\s*(.*)/);
-    if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\\s*/,"");
+    if(m){let n=m[1],u=m[2],d=m[3].replace(/^[-–—]\s*/,"");
     if(!u.startsWith("http"))u=GITHUB+"/"+dir+u;
     let gh=GITHUB+"/"+dir+m[2];r.push({n,d,c,u,gh});}
   });
@@ -127,8 +127,8 @@ function parse(t,c,dir){
 function statusText(url){
   let s=linkStatus[url];
   if(s===undefined)return'<span class="status-unknown" title="未检测">?</span>';
-  if(200<=s&&s<400)return'<span class="status-live" title="正常 HTTP '+s+'">&#x2713;</span>';
-  return'<span class="status-dead" title="失效 HTTP '+s+'">&#x2717;</span>';
+  if(200<=s&&s<400)return'<span class="status-live" title="正常 HTTP '+s+'">✓</span>';
+  return'<span class="status-dead" title="失效 HTTP '+s+'">✗</span>';
 }
 
 function makeBtns(i){
