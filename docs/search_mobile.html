@@ -103,24 +103,12 @@ h1 { font-size: 18px; margin-bottom: 16px; color: #f0f6fc; display: flex; align-
 #results .result-table { min-width: 620px; }
 
 /* 美化滚动条 */
-.table-wrap::-webkit-scrollbar {
-  height: 8px;
-}
-.table-wrap::-webkit-scrollbar-track {
-  background: #161b22;
-  border-radius: 4px;
-}
-.table-wrap::-webkit-scrollbar-thumb {
-  background: #30363d;
-  border-radius: 4px;
-}
-.table-wrap::-webkit-scrollbar-thumb:hover {
-  background: #58a6ff;
-}
-.table-wrap {
-  scrollbar-color: #30363d #161b22;
-  scrollbar-width: thin;
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #161b22; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
+::-webkit-scrollbar-corner { background: #0d1117; }
+html { scrollbar-color: #30363d #161b22; scrollbar-width: thin; }
 </style>
 </head>
 <body>
