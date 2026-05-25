@@ -72,7 +72,7 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .result-table .col-desc { width: 260px; color: #8b949e; font-size: 13px; overflow-wrap: break-word; }
 .result-table .col-cat { width: 70px; white-space: nowrap; }
 .result-table .col-tags { width: 100px; }
-.result-table .col-status { width: 55px; text-align: center; font-size: 14px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+.result-table .col-status { width: 55px; text-align: center; font-size: 14px; overflow: hidden; vertical-align: middle; }
 .result-table .col-repo { width: 85px; white-space: nowrap; text-align: center; }
 .result-table .col-link { width: 85px; white-space: nowrap; text-align: center; }
 .result-table .col-name span { font-weight: 600; color: #f0f6fc; }
@@ -81,13 +81,13 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .status-live { color: #3fb950; }
 
 .status-live, .status-dead, .status-unknown {
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
     width: 20px;
     height: 20px;
     line-height: 1;
-    margin: 0 auto;
+    vertical-align: middle;
 }
 .status-dead { color: #f85149; }
 .status-unknown { color: #484f58; }
