@@ -64,14 +64,14 @@ h1 { font-size: 24px; margin-bottom: 24px; color: #f0f6fc; }
 .tag-label:hover { background: #30363d; }
 
 /* result table */
-.result-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.result-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 16px; }
 .result-table th { text-align: left; padding: 10px 12px; font-size: 12px; color: #8b949e; font-weight: 600; border-bottom: 1px solid #21262d; white-space: nowrap; }
 .result-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; vertical-align: middle; font-size: 14px; }
 .result-table tr:hover td { background: #1c2128; }
-.result-table .col-name { min-width: 100px; }
-.result-table .col-desc { color: #8b949e; font-size: 13px; }
+.result-table .col-name { width: 110px; }
+.result-table .col-desc { width: 260px; color: #8b949e; font-size: 13px; overflow-wrap: break-word; }
 .result-table .col-cat { width: 70px; white-space: nowrap; }
-.result-table .col-tags { min-width: 80px; }
+.result-table .col-tags { width: 100px; }
 .result-table .col-status { width: 55px; text-align: center; font-size: 16px; }
 .result-table .col-repo { width: 85px; white-space: nowrap; text-align: center; }
 .result-table .col-link { width: 85px; white-space: nowrap; text-align: center; }
