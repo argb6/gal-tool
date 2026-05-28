@@ -47,7 +47,7 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 - [乱码转区](tool/README.md#乱码转区)（专门解决游戏出现乱码的情况）
 - [汉化翻译](tool/README.md#汉化翻译)（还未汉化的游戏专用工具）
 - [优化工具](tool/README.md#优化工具)（提升游戏体验的工具）
-- 
+  
 ## 📤分享
 
 发现好用的 Galgame 工具或优质网站？欢迎提交 [Issue](https://github.com/argb6/gal-navigation/issues) 
