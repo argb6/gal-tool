@@ -1,5 +1,16 @@
-<center># Galgame 工具与网站导航</center>
+<div align="center">
+  <img src="https://github.com/argb6/gal-navigation/blob/main/docs/2.png" width="128" height="128" alt="cover">
 
+  <h1 align="center">
+    GALNAVI
+  </h1>
+
+  <p>
+  <a href="https://galfind.cc.cd" target="_blank"><img src="https://img.shields.io/badge/Web-galfind.cc.cd-brightgreen?style=flat-square&logo=internet-archive&logoColor=white" alt="Website"></a> <a href="https://creativecommons.org/licenses/by/4.0/deed.zh-hans" target="_blank"><img src="https://img.shields.io/badge/License-CC_BY_4.0-lightgrey?style=flat-square&logo=creative-commons&logoColor=white&color=ef9421" alt="License: CC BY 4.0"></a>
+
+  <a href="https://github.com/argb6/gal-navigation/graphs/contributors" target="_blank"><img src="https://img.shields.io/github/contributors/argb6/gal-navigation?style=flat-square&color=blue&logo=github" alt="Contributors"></a> <a href="https://github.com/argb6/gal-navigation/issues" target="_blank"><img src="https://img.shields.io/github/issues/argb6/gal-navigation?style=flat-square&color=orange&logo=github" alt="Open Issues"></a>
+   </p>
+</div>
 
 
 ## 目录
