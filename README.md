@@ -1,29 +1,20 @@
 <div align="center">
   <img src="https://github.com/argb6/gal-navigation/blob/main/docs/2.png" width="128" height="128" alt="cover">
 
-  <h1 align="center">
-    GALNAVI
-  </h1>
+ # GALNAVI
+  
 
   <p>
-  <a href="https://galfind.cc.cd" target="_blank"><img src="https://img.shields.io/badge/Web-galfind.cc.cd-brightgreen?style=flat-square&logo=internet-archive&logoColor=white" alt="Website"></a> <a href="https://creativecommons.org/licenses/by/4.0/deed.zh-hans" target="_blank"><img src="https://img.shields.io/badge/License-CC_BY_4.0-lightgrey?style=flat-square&logo=creative-commons&logoColor=white&color=ef9421" alt="License: CC BY 4.0"></a>
+  <a href="https://galfind.cc.cd" target="_blank"><img src="https://img.shields.io/badge/Web-galfind.cc.cd-brightgreen?style=flat-square&logo=earth&logoColor=white" alt="Website"></a> <a href="https://creativecommons.org/licenses/by/4.0/deed.zh-hans" target="_blank"><img src="https://img.shields.io/badge/License-CC_BY_4.0-lightgrey?style=flat-square&logo=creative-commons&logoColor=white&color=ef9421" alt="License: CC BY 4.0"></a>
 
-  <a href="https://github.com/argb6/gal-navigation/graphs/contributors" target="_blank"><img src="https://img.shields.io/github/contributors/argb6/gal-navigation?style=flat-square&color=blue&logo=github" alt="Contributors"></a> <a href="https://github.com/argb6/gal-navigation/issues" target="_blank"><img src="https://img.shields.io/github/issues/argb6/gal-navigation?style=flat-square&color=orange&logo=github" alt="Open Issues"></a>
+  <a href="https://github.com/argb6/gal-navigation/graphs/contributors" target="_blank"><img src="https://img.shields.io/github/contributors/argb6/gal-navigation?style=flat-square&labelColor=black&color=blue&logo=github" alt="Contributors"></a> <a href="https://github.com/argb6/gal-navigation/issues" target="_blank"><img src="https://img.shields.io/github/issues/argb6/gal-navigation?&labelColor=black&style=flat-square&color=orange&logo=github" alt="Open Issues"></a> <a href="https://github.com/argb6/gal-navigation/stargazers"><img src="https://img.shields.io/github/stars/ximu3/vnite?color=ffcb47&labelColor=black&style=flat-square&logo=github&label=Stars" /></a>
    </p>
 </div>
 
+Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的 Galgame 相关工具和优质网站链接，方便玩家快速找到所需资源。
 
-## 目录
+只做导航，不做开发。所有收录的内容均为外部已有工具和网站。
 
-- [简介](#简介)
-- [结构](#项目结构)
-- [导航](#导航)
-  - [模拟器](#模拟器)
-  - [网站](#网站)
-  - [工具](#工具)
-- [贡献](#贡献)
-- [许可证](#许可证)
-- [版权声明](#版权声明)
 
 ## 简介
 
@@ -31,54 +22,40 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 
 只做导航，不做开发。所有收录的内容均为外部已有工具和网站。
 
-## 项目结构
-
-```
-gal-tool/
-├── simulators/           # 模拟器导航
-├── websites/             # 网站导航集合
-├── tools/                # 工具导航集合
-├── README.md             # 项目首页
-├── CONTRIBUTING.md       # 贡献指南
-└── LICENSE               # CC BY 4.0
-```
 
 ## 导航
 
 ### 模拟器
 
-详见(simulators/README.md)
+[详见](simulators/README.md)
 
-按平台分类收录 Galgame 模拟器：
 
 - [Android](simulators/README.md#android)
-- [iOS](simulators/README.md#ios)
 - [Windows](simulators/README.md#windows)
 
 ### 网站
 
-详见(websites/README.md)
+[详见](websites/README.md)
 
-按资源类型分类收录：
 
-- [<u>补丁资源</u>](websites/README.md#补丁资源)
-- [<u>游戏资源</u>](websites/README.md#游戏资源)
-- [<u>百科资源</u>](websites/README.md#百科资源)
+- [综合论坛](websites/README.md#综合论坛)
+- [资源站点](websites/README.md#资源站点)
+- [会社官网](websites/README.md#会社官网)
+- [汉化组专区](websites/README.md#汉化组专区)
+- [百科站点](websites/README.md#百科站点)
+ 
 
 ### 工具
 
-详见(tools/README.md)
+[详见](tools/README.md)
 
-各类 Galgame 玩家实用工具导航：
+- [资源管理](tool/README.md#资源管理)
+- [乱码转区](tool/README.md#乱码转区)
+- [汉化翻译](tool/README.md#汉化翻译)
 
-- [<u>评分记录工具</u>](tools/README.md)
-- [<u>图鉴查询工具</u>](tools/README.md)
-- [<u>存档管理工具</u>](tools/README.md)
-- [<u>攻略辅助工具</u>](tools/README.md)
+## 分享
 
-## 贡献
-
-发现好用的 Galgame 工具或优质网站？欢迎提交 Issue 或 Pull Request 补充链接！详见 [指南](CONTRIBUTING.md)。
+发现好用的 Galgame 工具或优质网站？欢迎提交 [Issue](https://github.com/argb6/gal-navigation/issues) 
 
 ## 许可证
 
@@ -92,6 +69,3 @@ gal-tool/
 
 - shenguang_2025@outlook.com
 
----
-
-**Gal 路漫漫，导航不迷路。**
