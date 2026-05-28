@@ -17,9 +17,9 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 
 
 
-## 导航
+## 📑内容
 
-### 模拟器
+### 🕹️模拟器
 
 [详见](simulators/README.md)
 
@@ -27,7 +27,7 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 - [Android](simulators/README.md#android)
 - [Windows](simulators/README.md#windows)
 
-### 网站
+### 🌐网站
 
 [详见](websites/README.md)
 
@@ -39,7 +39,7 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 - [百科站点](websites/README.md#百科站点)
  
 
-### 工具
+### ⚒️工具
 
 [详见](tools/README.md)
 
@@ -47,15 +47,15 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 - [乱码转区](tool/README.md#乱码转区)
 - [汉化翻译](tool/README.md#汉化翻译)
 
-## 分享
+## 📤分享
 
 发现好用的 Galgame 工具或优质网站？欢迎提交 [Issue](https://github.com/argb6/gal-navigation/issues) 
 
-## 许可证
+## ⚖️许可证
 
 本项目内容采用 [CC BY 4.0](LICENSE) 许可证。
 
-## 版权声明
+## ©️版权声明
 
 本仓库仅为导航性质，收录的所有工具、网站链接均指向第三方资源。各资源版权归原作者或平台所有。
 
