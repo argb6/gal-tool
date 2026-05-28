@@ -10,10 +10,6 @@
 - [winlator](winlator.md) - 在 Android 上运行 Windows 程序 `Android` `Windows模拟` `开源`
 - [盖世游戏](gaishi.md) - 对新手友好 `Android`
 
-## iOS
-
-> 待收录
-
 ## Windows
 
 - [龙神](ryujinx.md) - PC 版 Switch 模拟器 `Windows` `Switch` `开源`
