@@ -1,4 +1,6 @@
-# Galgame 工具与网站导航
+<center># Galgame 工具与网站导航</center>
+
+
 
 ## 目录
 
