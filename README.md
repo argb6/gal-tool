@@ -24,29 +24,30 @@ Galgame 玩家向的工具与网站导航仓库。汇总整理了各种实用的
 [详见](simulators/README.md)
 
 
-- [Android](simulators/README.md#android)
-- [Windows](simulators/README.md#windows)
+- [Android](simulators/README.md#android)（Android平台模拟器）
+- [Windows](simulators/README.md#windows)（Windows平台模拟器）
 
 ### 🌐网站
 
 [详见](websites/README.md)
 
 
-- [综合论坛](websites/README.md#综合论坛)
-- [资源站点](websites/README.md#资源站点)
-- [会社官网](websites/README.md#会社官网)
-- [汉化组专区](websites/README.md#汉化组专区)
-- [百科站点](websites/README.md#百科站点)
+- [综合论坛](websites/README.md#综合论坛)（综合能力强，给人一种几乎啥都有的感觉）
+- [资源站点](websites/README.md#资源站点)（游戏和补丁的相关资源）
+- [会社官网](websites/README.md#会社官网)（制作游戏的官方会社）
+- [汉化组专区](websites/README.md#汉化组专区)（汉化组专门的官网资源）
+- [百科站点](websites/README.md#百科站点)（专门以百科游戏为主的站点）
  
 
 ### ⚒️工具
 
 [详见](tools/README.md)
 
-- [资源管理](tool/README.md#资源管理)
-- [乱码转区](tool/README.md#乱码转区)
-- [汉化翻译](tool/README.md#汉化翻译)
-
+- [资源管理](tool/README.md#资源管理)（类似游戏仓库，专门管理本地的游戏及存档）
+- [乱码转区](tool/README.md#乱码转区)（专门解决游戏出现乱码的情况）
+- [汉化翻译](tool/README.md#汉化翻译)（还未汉化的游戏专用工具）
+- [优化工具](tool/README.md#优化工具)（提升游戏体验的工具）
+- 
 ## 📤分享
 
 发现好用的 Galgame 工具或优质网站？欢迎提交 [Issue](https://github.com/argb6/gal-navigation/issues) 
