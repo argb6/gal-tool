@@ -2,7 +2,7 @@ name: 网站链接检查
 
 on:
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 20 * * *'
   workflow_dispatch:
 
 permissions:
@@ -49,3 +49,20 @@ jobs:
               body: body,
               labels: ['link-check']
             });
+
+      - name: 发送邮件报告
+        if: always()
+        uses: dawidd6/action-send-mail@v5
+        with:
+          server_address: ${{ secrets.MAIL_SMTP_SERVER }}
+          server_port: ${{ secrets.MAIL_SMTP_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[链接检查] ${{ job.status }} - 每日报告"
+          to: ${{ secrets.MAIL_TO }}
+          from: ${{ secrets.MAIL_FROM }}
+          html_body: |
+            <h3>链接检查每日报告</h3>
+            <p>运行状态: <b>${{ job.status }}</b></p>
+            ${{ env.HAS_DEAD == 'true' && '<p style=&quot;color:red&quot;>⚠️ 发现失效链接，请查看 Issue</p>' || '<p style=&quot;color:green&quot;>✅ 所有链接正常</p>' }}
+            <p><a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">查看运行详情</a></p>
