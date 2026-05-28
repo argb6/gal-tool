@@ -50,19 +50,73 @@ jobs:
               labels: ['link-check']
             });
 
-      - name: 发送邮件报告
+      - name: 推送每日报告
         if: always()
-        uses: dawidd6/action-send-mail@v5
+        uses: actions/github-script@v9
         with:
-          server_address: ${{ secrets.MAIL_SMTP_SERVER }}
-          server_port: ${{ secrets.MAIL_SMTP_PORT }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "[链接检查] ${{ job.status }} - 每日报告"
-          to: ${{ secrets.MAIL_TO }}
-          from: ${{ secrets.MAIL_FROM }}
-          html_body: |
-            <h3>链接检查每日报告</h3>
-            <p>运行状态: <b>${{ job.status }}</b></p>
-            ${{ env.HAS_DEAD == 'true' && '<p style=&quot;color:red&quot;>⚠️ 发现失效链接，请查看 Issue</p>' || '<p style=&quot;color:green&quot;>✅ 所有链接正常</p>' }}
-            <p><a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">查看运行详情</a></p>
+          script: |
+            const fs = require('fs');
+            const status = '${{ job.status }}';
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const now = new Date().toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'});
+
+            let body = `## 每日链接检查报告
+
+**时间**：${now}
+**状态**：${status === 'success' ? '✅ 成功' : '❌ 失败'}`;
+
+            if (status === 'success') {
+              const report = JSON.parse(fs.readFileSync('docs/link-status.json', 'utf8'));
+              body += `
+
+| 指标 | 数量 |
+|------|------|
+| 总计 | ${report.total} |
+| 正常 | ${report.alive} |
+| 失效 | ${report.dead} |
+| 异常 | ${report.error} |
+
+[查看详情](${runUrl})`;
+
+              if (report.dead > 0 || report.error > 0) {
+                body += '
+
+⚠️ 发现失效链接，已自动创建 Issue。';
+              } else {
+                body += '
+
+✅ 所有链接正常。';
+              }
+            } else {
+              body += `
+
+[查看运行日志](${runUrl})`;
+            }
+
+            // 在固定 Issue #1 下评论每日报告
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: 1,
+              sort: 'created',
+              direction: 'desc',
+              per_page: 1
+            });
+
+            // 如果是今天的报告就更新，否则新建评论
+            const today = new Date().toLocaleDateString('zh-CN', {timeZone: 'Asia/Shanghai'});
+            if (comments.length > 0 && comments[0].body.includes(today)) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: comments[0].id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: 1,
+                body: body
+              });
+            }
